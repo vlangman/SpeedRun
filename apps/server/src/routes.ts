@@ -1,0 +1,20 @@
+import { Router } from 'express';
+import { TestController } from './controllers/test.controller';
+import { FlowController } from './controllers/flow.controller';
+
+const router = Router();
+
+// Test routes
+router.post('/tests/start-codegen', TestController.startCodegen);
+router.get('/tests', TestController.getAllTests);
+router.post('/tests', TestController.addTest);
+router.delete('/tests/:id', TestController.deleteTest);
+
+// Flow routes
+router.post('/flows', FlowController.createFlow);
+router.get('/flows', FlowController.getAllFlows);
+router.post('/flows/execute', FlowController.executeFlow);
+
+export default router;
+
+

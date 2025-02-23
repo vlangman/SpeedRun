@@ -1,0 +1,251 @@
+<div class="drawer drawer-open drawer-end">
+	<input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+	<div class="flex flex-col">
+		@if(!allTests().length || !allFlows().length) {
+		<ng-container *ngTemplateOutlet="WelcomePage"></ng-container>
+		}
+
+		<div class="flex-col p-4">
+			<div class="flex flex-col items-center">
+				@if(selectedFlow; as flow) {
+				<h1 class="text-2xl mb-10">
+					{{ flow.name }}
+				</h1>
+
+				<div class="divider divider-neutral w-full">Flow builder</div>
+
+				<app-test-composer class="w-full flex justify-center" [flow]="selectedFlow"></app-test-composer>
+
+				}
+			</div>
+		</div>
+	</div>
+
+	<div class="drawer-side min-w-[30vw] max-w-[30vw] override-overflow">
+		<label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
+		<ul class="menu bg-base-200 text-base-content h-full w-full">
+			<div class="tabs tabs-lift">
+				<input type="radio" name="divider_tabs" class="tab w-1/2" aria-label="Flows" checked="checked" />
+				<div class="tab-content bg-base-100 border-base-300 p-2">
+					<li>
+						<button class="btn btn-primary" onclick="create_flow_modal.showModal()">
+							<span class="text-2xl mb-0.5">+</span>
+							Add Flow
+						</button>
+					</li>
+
+					<ul class="list bg-base-100 rounded-box">
+						@for(flow of allFlows(); track $index) {
+						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Flows</li>
+
+						<li
+							class="list-row p-0"
+							[class.bg-primary]="flow.id === selectedFlow?.id"
+							(click)="selectedFlow = flow">
+							<div class="flex flex-col items-start">
+								<span class="flex justify-between w-full items-center pt-1.5">
+									<p>{{ flow.name }}</p>
+									<button class="btn btn-xs btn-square btn-accent">
+										<svg
+											class="size-[1.2em]"
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 24 24">
+											<g
+												stroke-linejoin="round"
+												stroke-linecap="round"
+												stroke-width="2"
+												fill="none"
+												stroke="currentColor">
+												<path d="M6 3L20 12 6 21 6 3z"></path>
+											</g>
+										</svg>
+									</button>
+								</span>
+								<small class="text-xs font-semibold text-gray-500">{{ flow.description }}</small>
+							</div>
+						</li>
+						}
+					</ul>
+				</div>
+
+				<input type="radio" name="divider_tabs" class="tab w-1/2" aria-label="Tests" />
+				<div class="tab-content bg-base-100 border-base-300 p-2">
+					<li>
+						<button class="btn btn-primary" onclick="create_test_modal.showModal()">
+							<span class="text-2xl mb-0.5">+</span>
+							Add Test
+						</button>
+					</li>
+
+					<ul
+						class="list bg-base-100 rounded-box"
+						cdkDropList
+						[cdkDropListData]="allTests()"
+						[cdkDropListConnectedTo]="['selectedTestsList']">
+						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Tests</li>
+						@for(test of allTests(); track $index; let i = $index) {
+
+						<app-test-list-item [test]="test"></app-test-list-item>
+						<!-- <li
+							class="list-row p-0 bg-slate-800 z-50"
+							cdkDrag
+							(cdkDragStarted)="dragStarted($event, i)"
+							(cdkDragEnded)="dragEnded($event)">
+							<div class="flex flex-col items-start justify-center">
+								<span class="flex justify-between w-full pt-1.5">
+									<p>{{ test.name }}</p>
+									<button class="btn btn-xs btn-square btn-accent">
+										<svg
+											class="size-[1.2em]"
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 24 24">
+											<g
+												stroke-linejoin="round"
+												stroke-linecap="round"
+												stroke-width="2"
+												fill="none"
+												stroke="currentColor">
+												<path d="M6 3L20 12 6 21 6 3z"></path>
+											</g>
+										</svg>
+									</button>
+								</span>
+								<small class="text-xs font-semibold text-gray-500">
+									{{ test.description }}
+								</small>
+							</div>
+						</li> -->
+						}
+					</ul>
+				</div>
+			</div>
+		</ul>
+	</div>
+</div>
+
+<ng-template #WelcomePage>
+	<div class="hero bg-base-100">
+		<div class="hero-content text-center h-full pt-10">
+			<div class="max-w-md">
+				<h1 class="text-5xl font-bold">Welcome to the Test Builder</h1>
+				@if(allTests().length <= 0) {
+				<h3 class="text-lg mt-4">You have not created any tests yet.</h3>
+
+				<p class="py-6">Click on the button below to create a new test.</p>
+
+				<button class="btn btn-primary" onclick="create_test_modal.showModal()">Create New Test</button>
+				} @else if(allFlows().length <= 0) {
+				<h3 class="text-lg mt-4">You have not created any flows yet.</h3>
+
+				<p class="py-6">
+					Flows link tests together to create a chain that can be used to test a user's journey through your
+					application.
+				</p>
+
+				<button class="btn btn-primary" onclick="create_flow_modal.showModal()">Create New Flow</button>
+				}
+			</div>
+		</div>
+	</div>
+</ng-template>
+
+<!-- Open the modal using ID.showModal() method -->
+<dialog id="create_test_modal" class="modal">
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">Create New Test</h3>
+
+		<form [formGroup]="newTestForm">
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">Test Name</legend>
+				<input
+					[class.input-error]="newTestForm.controls['name'].invalid && newTestForm.controls['name'].touched"
+					type="text"
+					class="input"
+					placeholder="Type here"
+					formControlName="name" />
+				<p
+					class="fieldset-label"
+					[class.text-error]="newTestForm.controls['name'].invalid && newTestForm.controls['name'].touched">
+					required
+				</p>
+			</fieldset>
+
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">Describe this test</legend>
+				<textarea
+					[class.textarea-error]="
+						newTestForm.controls['description'].invalid && newTestForm.controls['description'].touched
+					"
+					type="email"
+					class="textarea h-32"
+					placeholder="Type here"
+					formControlName="description"></textarea>
+				<p
+					class="fieldset-label"
+					[class.text-error]="
+						newTestForm.controls['description'].invalid && newTestForm.controls['description'].touched
+					">
+					required
+				</p>
+			</fieldset>
+		</form>
+		<div class="flex justify-end w-full">
+			<button class="btn btn-primary" [disabled]="newTestForm.invalid" (click)="createNewTest()">
+				Create Test
+			</button>
+		</div>
+	</div>
+	<form method="dialog" class="modal-backdrop">
+		<button>close</button>
+	</form>
+</dialog>
+
+<dialog id="create_flow_modal" class="modal">
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">Create New Flow</h3>
+
+		<form [formGroup]="newFlowForm">
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">Flow Name</legend>
+				<input
+					[class.input-error]="newFlowForm.controls['name'].invalid && newFlowForm.controls['name'].touched"
+					type="text"
+					class="input"
+					placeholder="Type here"
+					formControlName="name" />
+				<p
+					class="fieldset-label"
+					[class.text-error]="newFlowForm.controls['name'].invalid && newFlowForm.controls['name'].touched">
+					required
+				</p>
+			</fieldset>
+
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">Describe this flow</legend>
+				<textarea
+					[class.textarea-error]="
+						newFlowForm.controls['description'].invalid && newFlowForm.controls['description'].touched
+					"
+					type="email"
+					class="textarea h-32"
+					placeholder="Type here"
+					formControlName="description"></textarea>
+				<p
+					class="fieldset-label"
+					[class.text-error]="
+						newFlowForm.controls['description'].invalid && newFlowForm.controls['description'].touched
+					">
+					required
+				</p>
+			</fieldset>
+		</form>
+		<div class="flex justify-end w-full">
+			<button class="btn btn-primary" [disabled]="newFlowForm.invalid" (click)="createNewFlow()">
+				Create Flow
+			</button>
+		</div>
+	</div>
+	<form method="dialog" class="modal-backdrop">
+		<button>close</button>
+	</form>
+</dialog>

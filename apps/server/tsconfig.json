@@ -1,0 +1,19 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"files": [],
+	"include": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		}
+	],
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"strict": true,
+		"noImplicitAny": false,
+
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"strictPropertyInitialization": false
+	}
+}
