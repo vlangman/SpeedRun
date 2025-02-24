@@ -23,6 +23,7 @@ export class TestBuilderComponent {
 	newTestForm: FormGroup = new FormGroup({
 		name: new FormControl('', Validators.required),
 		description: new FormControl('', Validators.required),
+		url: new FormControl(''),
 	});
 
 	newFlowForm: FormGroup = new FormGroup({
@@ -56,7 +57,7 @@ export class TestBuilderComponent {
 
 	createNewTest() {
 		const newTest = this.newTestForm.getRawValue();
-		this.apiService.addTest(newTest.name, newTest.description).subscribe((response) => {
+		this.apiService.addTest(newTest.name, newTest.description, newTest.url).subscribe((response) => {
 			console.log(response);
 			this.allTests.update((tests) => {
 				tests.push(response);

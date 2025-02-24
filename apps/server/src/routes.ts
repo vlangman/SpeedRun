@@ -9,6 +9,7 @@ router.post('/tests/start-codegen', TestController.startCodegen);
 router.get('/tests', TestController.getAllTests);
 router.post('/tests', TestController.addTest);
 router.delete('/tests/:id', TestController.deleteTest);
+router.post('/tests/execute', TestController.executeTest);
 
 // Flow routes
 router.post('/flows', FlowController.createFlow);

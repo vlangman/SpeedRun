@@ -84,37 +84,8 @@
 						[cdkDropListConnectedTo]="['selectedTestsList']">
 						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Tests</li>
 						@for(test of allTests(); track $index; let i = $index) {
-
 						<app-test-list-item [test]="test"></app-test-list-item>
-						<!-- <li
-							class="list-row p-0 bg-slate-800 z-50"
-							cdkDrag
-							(cdkDragStarted)="dragStarted($event, i)"
-							(cdkDragEnded)="dragEnded($event)">
-							<div class="flex flex-col items-start justify-center">
-								<span class="flex justify-between w-full pt-1.5">
-									<p>{{ test.name }}</p>
-									<button class="btn btn-xs btn-square btn-accent">
-										<svg
-											class="size-[1.2em]"
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 24 24">
-											<g
-												stroke-linejoin="round"
-												stroke-linecap="round"
-												stroke-width="2"
-												fill="none"
-												stroke="currentColor">
-												<path d="M6 3L20 12 6 21 6 3z"></path>
-											</g>
-										</svg>
-									</button>
-								</span>
-								<small class="text-xs font-semibold text-gray-500">
-									{{ test.description }}
-								</small>
-							</div>
-						</li> -->
+
 						}
 					</ul>
 				</div>
@@ -148,6 +119,19 @@
 		</div>
 	</div>
 </ng-template>
+
+<dialog id="record_test_modal" class="modal">
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">Hello!</h3>
+		<p class="py-4">Press ESC key or click the button below to close</p>
+		<div class="modal-action">
+			<form method="dialog">
+				<!-- if there is a button in form, it will close the modal -->
+				<button class="btn">Close</button>
+			</form>
+		</div>
+	</div>
+</dialog>
 
 <!-- Open the modal using ID.showModal() method -->
 <dialog id="create_test_modal" class="modal">
@@ -188,10 +172,24 @@
 					required
 				</p>
 			</fieldset>
+
+
+			<!-- //optional test url to start at -->
+			 <fieldset class="fieldset">
+				<legend class="fieldset-legend">Test URL</legend>
+				<input
+					type="text"
+					class="input"
+					placeholder="Type here"
+					formControlName="url" />
+				<p class="fieldset-label">
+					optional
+				</p>
+			</fieldset>
 		</form>
 		<div class="flex justify-end w-full">
 			<button class="btn btn-primary" [disabled]="newTestForm.invalid" (click)="createNewTest()">
-				Create Test
+				Record Test
 			</button>
 		</div>
 	</div>

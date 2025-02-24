@@ -47,10 +47,10 @@ export class ApiService extends AbstractHttpService {
 	}
 
 	// Add a new test
-	addTest(name: string, description: string): Observable<Test> {
+	addTest(name: string, description: string, url: string): Observable<Test> {
 		return this.POST<Test>({
 			endpoint: '/tests',
-			body: { name, description },
+			body: { name, description, url },
 		}).pipe(this.Execute());
 	}
 
@@ -81,6 +81,13 @@ export class ApiService extends AbstractHttpService {
 		return this.POST<{ results: any[] }>({
 			endpoint: '/flows/execute',
 			body: { flowName },
+		}).pipe(this.Execute());
+	}
+
+	executeTest(testId: number): Observable<{ results: any[] }> {
+		return this.POST<{ results: any[] }>({
+			endpoint: '/tests/execute',
+			body: { id: testId },
 		}).pipe(this.Execute());
 	}
 

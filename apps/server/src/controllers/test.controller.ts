@@ -99,7 +99,7 @@ export class TestController {
 	//add new test
 	static async addTest(req: Request, res: Response) {
 		try {
-			const { name, description } = req.body;
+			const { name, description,url } = req.body;
 			const testRepository = AppDataSource.getRepository(Test);
 
 			const existingTest = await testRepository.findOne({ where: { name } });
@@ -123,8 +123,73 @@ export class TestController {
 				result: test,
 				errors: [],
 			};
-			res.json(response);
+
+			//start the codegen for the test using the url
+			exec(`npx playwright codegen ${url} --output ${filePath}`, async (error, stdout, stderr) => {
+				if (error) {
+					const response: APIResponse<null> = {
+						result: null,
+						errors: [{ status: 500, message: 'Failed to start CodeGen', error: error.message }],
+					};
+					return res.status(500).json(response);
+				}
+				res.json(response);
+			});
+
 		} catch (error) {
+			const response: APIResponse<null> = {
+				result: null,
+				errors: [
+					{
+						status: 500,
+						message: 'Internal server error',
+						error: error instanceof Error ? error.message : 'Unknown error',
+					},
+				],
+			};
+			res.status(500).json(response);
+		}
+	}
+
+	//executeTest
+
+	static async executeTest(req: Request, res: Response) {
+		try{
+
+			const testId = req.body.id;
+			const test = await AppDataSource.getRepository(Test).findOneBy({ id: testId });
+
+			if(!test){
+				const response: APIResponse<null> = {
+					result: null,
+					errors: [{ status: 404, message: `Test with id ${testId} not found` }],
+				};
+				res.json(response);
+				return;
+			}
+			console.log(test.filePath);
+			//open the test using npx playwright test
+			exec(`npx playwright test ${test.filePath}`, async (error, stdout, stderr) => {
+				if (error) {
+					console.log(error);
+					const response: APIResponse<null> = {
+						result: null,
+						errors: [{ status: 500, message: 'Failed to execute test', error: error.message }],
+					};
+					return res.status(500).json(response);
+				}
+
+				const response: APIResponse<null> = {
+					result: null,
+					errors: [],
+				};
+				res.json(response);
+			});
+
+
+
+
+		}catch (error) {
 			const response: APIResponse<null> = {
 				result: null,
 				errors: [
