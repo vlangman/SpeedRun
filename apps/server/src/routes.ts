@@ -15,6 +15,7 @@ router.post('/tests/execute', TestController.executeTest);
 router.post('/flows', FlowController.createFlow);
 router.get('/flows', FlowController.getAllFlows);
 router.post('/flows/execute', FlowController.executeFlow);
+router.post('/flows/test', FlowController.testFlow);
 
 export default router;
 

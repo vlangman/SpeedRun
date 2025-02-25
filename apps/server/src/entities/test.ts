@@ -1,8 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Test as TestInterface } from "@shared";
+import { FlowTest } from './flow-test';
+
 
 @Entity()
-export class Test implements TestInterface{
+export class Test implements TestInterface {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,8 +14,8 @@ export class Test implements TestInterface{
   @Column()
   description: string;
 
-  @Column()
-  filePath: string;
+  @OneToMany(() => FlowTest, flowTest => flowTest.test)
+  flowTests: FlowTest[];
 
   @CreateDateColumn()
   createdAt: Date;

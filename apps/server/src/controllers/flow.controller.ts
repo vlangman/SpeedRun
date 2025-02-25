@@ -3,8 +3,8 @@ import { AppDataSource } from '../data-source';
 
 import { APIResponse } from '@shared';
 import { Flow } from '../entities/flow';
-import { Test } from '../entities/test';
-import { exec } from 'child_process';
+import { FlowFactory } from '../flow-factory';
+import {  expect } from '@playwright/test';
 
 export class FlowController {
 	static async createFlow(req: Request, res: Response) {
@@ -39,7 +39,7 @@ export class FlowController {
 			const flow = new Flow();
 			flow.name = flowName;
 			flow.description = description || '';
-			flow.tests = [];
+			flow.flowTests = [];
 
 			await flowRepository.save(flow);
 
@@ -66,7 +66,7 @@ export class FlowController {
 	static async getAllFlows(req: Request, res: Response) {
 		try {
 			const flowRepository = AppDataSource.getRepository(Flow);
-			const flows = await flowRepository.find({ relations: ['tests'] });
+			const flows = await flowRepository.find({ relations: ['flowTests'] });
 
 			const response: APIResponse<Flow[]> = {
 				result: flows,
@@ -74,6 +74,8 @@ export class FlowController {
 			};
 			res.json(response);
 		} catch (error) {
+			console.log('Failed to retrieve flows');
+			console.error( error);
 			const response: APIResponse<null> = {
 				result: null,
 				errors: [
@@ -85,6 +87,60 @@ export class FlowController {
 				],
 			};
 			res.status(500).json(response);
+		}
+	}
+
+	static async updateFlow(req: Request, res: Response) {
+		try {
+			const flow = req.body;
+			const flowRepository = AppDataSource.getRepository(Flow);
+			const updatedFlow = await flowRepository.save(flow);
+			const response: APIResponse<Flow> = {
+				result: updatedFlow,
+				errors: [],
+			};
+			res.json(response);
+		} catch (error: any) {
+			const response: APIResponse<null> = {
+				result: null,
+				errors: [
+					{
+						status: 500,
+						message: 'Failed to update flow',
+						error: error instanceof Error ? error.message : 'Unknown error',
+					},
+				],
+			};
+			res.status(500).json(response);
+		}
+	}
+
+	static async testFlow(req: Request, res: Response) {
+		const { flow } = req.body;
+
+		const code = FlowFactory.compileFlow(flow);
+
+		const { chromium } = require('playwright');
+		const vm = require('vm');
+	
+		// Store output from the test
+		let output :any[]= [];
+		
+		// Custom console.log to capture logs
+		const sandbox = {
+			chromium,
+			console: {
+				log: (...args) => output.push(args.join(' ')),
+				error: (...args) => output.push('ERROR: ' + args.join(' ')),
+			},
+			expect: expect
+		};
+	
+		try {
+			await vm.runInNewContext(code, sandbox);
+			res.json({ success: true, output,code: code });
+		} catch (err:any) {
+			res.json({ success: false, error: err.message, output,code:code });
 		}
 	}
 
@@ -108,16 +164,16 @@ export class FlowController {
 
 			// Execute tests sequentially
 			const results: Promise<any>[] = [];
-			for (const test of flow.tests) {
+			for (const test of flow.flowTests) {
 				const result = await new Promise<any>((resolve) => {
-					exec(`npx playwright test ${test.filePath} --headed`, (error, stdout, stderr) => {
-						resolve({
-							testName: test.name,
-							success: !error,
-							output: stdout,
-							error: error?.message,
-						});
-					});
+					// exec(`npx playwright test ${test.filePath} --headed`, (error, stdout, stderr) => {
+					// 	resolve({
+					// 		testName: test.name,
+					// 		success: !error,
+					// 		output: stdout,
+					// 		error: error?.message,
+					// 	});
+					// });
 				});
 				results.push(result);
 			}

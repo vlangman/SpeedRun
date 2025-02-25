@@ -1,10 +1,11 @@
-import { Test } from './test';
+import { FlowTest } from './flow-test';
+
 
 export interface Flow {
 	id: number;
 	name: string;
 	description: string;
-	tests: Test[];
+	flowTests: FlowTest[];
 	createdAt: Date;
 	updatedAt: Date;
 }

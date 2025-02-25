@@ -5,6 +5,8 @@ import * as path from 'path';
 import { exec } from 'child_process';
 import { APIResponse } from '@shared';
 
+
+
 export class TestController {
 	
 	
@@ -47,7 +49,6 @@ export class TestController {
 				const test = new Test();
 				test.name = testName;
 				test.description = description || '';
-				test.filePath = testFile;
 				await testRepository.save(test);
 
 				const response: APIResponse<Test> = {
@@ -116,7 +117,6 @@ export class TestController {
 			const test = new Test();
 			test.name = name;
 			test.description = description || '';
-			test.filePath = filePath;
 			await testRepository.save(test);
 
 			const response: APIResponse<Test> = {
@@ -167,9 +167,10 @@ export class TestController {
 				res.json(response);
 				return;
 			}
-			console.log(test.filePath);
+			console.log(test.name);
 			//open the test using npx playwright test
-			exec(`npx playwright test ${test.filePath}`, async (error, stdout, stderr) => {
+			const realPath = path.join(__dirname, '../../../recordings', `${test.name}.spec.ts`);
+			exec(`npx playwright test  ${realPath} --ui`, async (error, stdout, stderr) => {
 				if (error) {
 					console.log(error);
 					const response: APIResponse<null> = {
@@ -185,9 +186,6 @@ export class TestController {
 				};
 				res.json(response);
 			});
-
-
-
 
 		}catch (error) {
 			const response: APIResponse<null> = {

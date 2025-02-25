@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
 import { Flow, Test } from '@shared';
 import { TestListItemComponent } from '../test-list-item/test-list-item.component';
+import { FlowTest } from 'libs/shared/src/lib/entities/flow-test';
 
 @Component({
 	selector: 'app-test-composer',
@@ -15,12 +16,17 @@ export class TestComposerComponent {
 	@Input() flow!: Flow;
 	dragging = false;
 
-	drop(event: CdkDragDrop<Test[]>): void {
+	drop(event: CdkDragDrop<FlowTest[]>): void {
+		console.log(event);
+
 		if (event.previousContainer === event.container) {
+			//update the order of the flowTest
 			moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 		} else {
-			const item = event.previousContainer.data[event.previousIndex];
-			event.container.data.splice(event.currentIndex, 0, item);
+			copyArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
 		}
+		event.container.data.forEach((flowTest, index) => {
+			flowTest.order = index;
+		});
 	}
 }

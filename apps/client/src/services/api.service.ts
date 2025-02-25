@@ -84,6 +84,15 @@ export class ApiService extends AbstractHttpService {
 		}).pipe(this.Execute());
 	}
 
+	// test a flows test execution before saving it
+	testFlow(flow:Flow)
+	{
+		return this.POST<{ results: any[] }>({
+			endpoint: '/flows/test',
+			body: { flow },
+		}).pipe(this.Execute());
+	}
+
 	executeTest(testId: number): Observable<{ results: any[] }> {
 		return this.POST<{ results: any[] }>({
 			endpoint: '/tests/execute',

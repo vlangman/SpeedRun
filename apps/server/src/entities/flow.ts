@@ -1,10 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
-import { Test } from './test';
-import {Flow as FlowInterface} from '@shared';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
+import { Flow as FlowInterface } from '@shared';
+import { FlowTest } from './flow-test';
 
 @Entity()
-export class Flow implements FlowInterface{
+export class Flow implements FlowInterface {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,9 +14,8 @@ export class Flow implements FlowInterface{
   @Column()
   description: string;
 
-  @ManyToMany(() => Test)
-  @JoinTable()
-  tests: Test[];
+  @OneToMany(() => FlowTest, flowTest => flowTest.flow, { cascade: true })
+  flowTests: FlowTest[];
 
   @CreateDateColumn()
   createdAt: Date;

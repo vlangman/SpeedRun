@@ -1,12 +1,13 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, computed, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
-import { Subject, takeUntil } from 'rxjs';
+import { catchError, of, Subject, takeUntil } from 'rxjs';
 import { Flow, Test } from '@shared';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TestComposerComponent } from '../test-composer/test-composer.component';
 import { CdkDragStart, CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { TestListItemComponent } from "../test-list-item/test-list-item.component";
+import { FlowTest } from 'libs/shared/src/lib/entities/flow-test';
 
 @Component({
 	selector: 'app-test-builder',
@@ -18,6 +19,19 @@ export class TestBuilderComponent {
 	allTests: WritableSignal<Test[]> = signal([]);
 	allFlows: WritableSignal<Flow[]> = signal([]);
 
+
+	testFlows = computed(()=>{
+		const tests = this.allTests();
+
+		return tests.map(test => {
+			const flowTest : Omit<FlowTest,"flow"> = {
+				id: 0,
+				test,
+				order: 0,
+			}
+			return flowTest;
+		});
+	})
 	selectedFlow: Flow | null = null;
 
 	newTestForm: FormGroup = new FormGroup({
@@ -75,6 +89,28 @@ export class TestBuilderComponent {
 				return flows;
 			});
 		});
+	}
+
+
+	runFlow() {
+		this.apiService.testFlow(this.selectedFlow!)
+		.pipe(
+			catchError((error) => {
+				console.error('Failed to run flow', error);
+				return of(null);
+			})
+		)
+		.subscribe(
+			(response) => {
+				console.log(response);
+			},
+		)
+		
+	}
+
+	saveFlow()
+	{
+
 	}
 
 

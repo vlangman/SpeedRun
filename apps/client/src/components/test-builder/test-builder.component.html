@@ -16,7 +16,13 @@
 
 				<app-test-composer class="w-full flex justify-center" [flow]="selectedFlow"></app-test-composer>
 
-				}
+				@if(selectedFlow.flowTests.length) { 
+					<div class="flex justify-between p-4 w-full">
+
+						<button class="btn btn-accent mt-4" (click)="runFlow()">Run Flow</button>
+						<button class="btn btn-primary mt-4" (click)="saveFlow()">Save</button>
+					</div>
+				} }
 			</div>
 		</div>
 	</div>
@@ -25,7 +31,38 @@
 		<label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul class="menu bg-base-200 text-base-content h-full w-full">
 			<div class="tabs tabs-lift">
-				<input type="radio" name="divider_tabs" class="tab w-1/2" aria-label="Flows" checked="checked" />
+				<input
+					type="radio"
+					name="divider_tabs"
+					class="tab w-1/2"
+					aria-label="Tests"
+					[checked]="!allTests().length ? 'checked' : ''" />
+				<div class="tab-content bg-base-100 border-base-300 p-2">
+					<li>
+						<button class="btn btn-primary" onclick="create_test_modal.showModal()">
+							<span class="text-2xl mb-0.5">+</span>
+							Add Test
+						</button>
+					</li>
+
+					<ul
+						class="list bg-base-100 rounded-box"
+						cdkDropList
+						[cdkDropListData]="testFlows()"
+						[cdkDropListConnectedTo]="['selectedTestsList']">
+						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Tests</li>
+						@for(test of allTests(); track $index; let i = $index) {
+						<app-test-list-item [test]="test"></app-test-list-item>
+
+						}
+					</ul>
+				</div>
+				<input
+					type="radio"
+					name="divider_tabs"
+					class="tab w-1/2"
+					aria-label="Flows"
+					[checked]="allTests().length ? 'checked' : ''" />
 				<div class="tab-content bg-base-100 border-base-300 p-2">
 					<li>
 						<button class="btn btn-primary" onclick="create_flow_modal.showModal()">
@@ -40,7 +77,7 @@
 
 						<li
 							class="list-row p-0"
-							[class.bg-primary]="flow.id === selectedFlow?.id"
+							[class.bg-info-content]="flow.id === selectedFlow?.id"
 							(click)="selectedFlow = flow">
 							<div class="flex flex-col items-start">
 								<span class="flex justify-between w-full items-center pt-1.5">
@@ -67,28 +104,6 @@
 						}
 					</ul>
 				</div>
-
-				<input type="radio" name="divider_tabs" class="tab w-1/2" aria-label="Tests" />
-				<div class="tab-content bg-base-100 border-base-300 p-2">
-					<li>
-						<button class="btn btn-primary" onclick="create_test_modal.showModal()">
-							<span class="text-2xl mb-0.5">+</span>
-							Add Test
-						</button>
-					</li>
-
-					<ul
-						class="list bg-base-100 rounded-box"
-						cdkDropList
-						[cdkDropListData]="allTests()"
-						[cdkDropListConnectedTo]="['selectedTestsList']">
-						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Tests</li>
-						@for(test of allTests(); track $index; let i = $index) {
-						<app-test-list-item [test]="test"></app-test-list-item>
-
-						}
-					</ul>
-				</div>
 			</div>
 		</ul>
 	</div>
@@ -97,16 +112,16 @@
 <ng-template #WelcomePage>
 	<div class="hero bg-base-100">
 		<div class="hero-content text-center h-full pt-10">
-			<div class="max-w-md">
-				<h1 class="text-5xl font-bold">Welcome to the Test Builder</h1>
+			<div class="max-w-lg">
 				@if(allTests().length <= 0) {
+				<h1 class="text-5xl font-bold">Welcome to the Test Builder</h1>
 				<h3 class="text-lg mt-4">You have not created any tests yet.</h3>
 
 				<p class="py-6">Click on the button below to create a new test.</p>
 
 				<button class="btn btn-primary" onclick="create_test_modal.showModal()">Create New Test</button>
 				} @else if(allFlows().length <= 0) {
-				<h3 class="text-lg mt-4">You have not created any flows yet.</h3>
+				<h3 class="text-3xl mt-4">You have not created any flows yet.</h3>
 
 				<p class="py-6">
 					Flows link tests together to create a chain that can be used to test a user's journey through your
@@ -173,18 +188,11 @@
 				</p>
 			</fieldset>
 
-
 			<!-- //optional test url to start at -->
-			 <fieldset class="fieldset">
+			<fieldset class="fieldset">
 				<legend class="fieldset-legend">Test URL</legend>
-				<input
-					type="text"
-					class="input"
-					placeholder="Type here"
-					formControlName="url" />
-				<p class="fieldset-label">
-					optional
-				</p>
+				<input type="text" class="input" placeholder="Type here" formControlName="url" />
+				<p class="fieldset-label">optional</p>
 			</fieldset>
 		</form>
 		<div class="flex justify-end w-full">
