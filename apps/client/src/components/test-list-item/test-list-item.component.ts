@@ -1,8 +1,9 @@
-import { Component, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Test } from '@shared';
-import { CdkDragStart, DragDropModule } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ApiService } from '../../services/api.service';
+import { Subject } from 'rxjs';
 
 @Component({
 	selector: 'app-test-list-item',
@@ -12,6 +13,10 @@ import { ApiService } from '../../services/api.service';
 })
 export class TestListItemComponent {
 	@Input() test!: Test;
+	@Output() deleteTest: Subject<Test> = new EventEmitter<Test>();
+	@Output() recordTest: Subject<Test> = new EventEmitter<Test>();
+	
+	@ViewChild('confirmDeleteModal',{static:true}) confirmDeleteModal!: ElementRef<any>;
 
 	constructor(private apiService: ApiService) {}
 
@@ -21,11 +26,6 @@ export class TestListItemComponent {
 		draggedElement.style.transform = 'none';
 	}
 
-	recordTest(test:Test)
-	{
-		// this.apiService.startCodegen())
-	}
-
 	playTest(test:Test)
 	{
 		this.apiService.executeTest(test.id)
@@ -33,4 +33,11 @@ export class TestListItemComponent {
 			console.log(response);
 		});
 	}
+
+
+	showDeleteModal(){
+		console.log(this.confirmDeleteModal);
+		this.confirmDeleteModal.nativeElement.showModal();
+	}
+	
 }

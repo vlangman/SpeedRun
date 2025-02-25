@@ -6,4 +6,8 @@ export interface FlowTest {
 	flow: Flow;
 	test: Test;
 	order: number;
+	
+	forceGoto: boolean;
+	openInNewTab: boolean;
+	openInNewWindow: boolean;
 }

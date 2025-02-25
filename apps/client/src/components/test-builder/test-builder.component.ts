@@ -24,10 +24,12 @@ export class TestBuilderComponent {
 		const tests = this.allTests();
 
 		return tests.map(test => {
-			const flowTest : Omit<FlowTest,"flow"> = {
-				id: 0,
+			const flowTest : Omit<FlowTest,"flow" | "id"> = {
 				test,
 				order: 0,
+				forceGoto: false,
+				openInNewTab: false,
+				openInNewWindow: false,
 			}
 			return flowTest;
 		});
@@ -106,6 +108,23 @@ export class TestBuilderComponent {
 			},
 		)
 		
+	}
+
+	startTestRecording(test: Test) {
+		this.apiService.startRecording(test.id).subscribe((response) => {
+			console.log(response);
+		});
+
+
+	};
+
+	deleteTest(test: Test) {
+		this.apiService.deleteTest(test.id).subscribe((response) => {
+			console.log(response);
+			this.allTests.update((tests) => {
+				return tests.filter((t) => t.id !== test.id);
+			});
+		});
 	}
 
 	saveFlow()

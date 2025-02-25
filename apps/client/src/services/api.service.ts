@@ -55,7 +55,7 @@ export class ApiService extends AbstractHttpService {
 	}
 
 	// Delete a test
-	deleteTest(id: string): Observable<null> {
+	deleteTest(id: number): Observable<null> {
 		return this.DELETE<null>({
 			endpoint: `/tests/${id}`,
 		}).pipe(this.Execute());
@@ -99,6 +99,14 @@ export class ApiService extends AbstractHttpService {
 			body: { id: testId },
 		}).pipe(this.Execute());
 	}
+
+	startRecording(testId: number): Observable<Test> {
+		return this.POST<Test>({
+			endpoint: '/tests/start-recording',
+			body: { id: testId },
+		}).pipe(this.Execute());
+	}
+
 
 	//UTILS
 	private Execute<Response>(options?: { showLoader: boolean; hideErrorToast?: boolean; returnResponse?: boolean }) {

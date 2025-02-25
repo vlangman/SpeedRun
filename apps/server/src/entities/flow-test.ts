@@ -4,15 +4,23 @@ import { Test } from './test';
 
 @Entity()
 export class FlowTest {
-  @PrimaryGeneratedColumn()
-  id: number;
+	@PrimaryGeneratedColumn()
+	id: number;
 
-  @ManyToOne(() => Flow, flow => flow.flowTests)
-  flow: Flow;
+	@ManyToOne(() => Flow, (flow) => flow.flowTests)
+	flow: Flow;
 
-  @ManyToOne(() => Test)
-  test: Test;
+	@ManyToOne(() => Test)
+	test: Test;
 
-  @Column()
-  order: number;
+	@Column()
+	order: number;
+
+
+	@Column()
+	forceGoto: boolean;
+	@Column()
+	openInNewTab: boolean;
+	@Column()
+	openInNewWindow: boolean;
 }

@@ -16,12 +16,11 @@
 
 				<app-test-composer class="w-full flex justify-center" [flow]="selectedFlow"></app-test-composer>
 
-				@if(selectedFlow.flowTests.length) { 
-					<div class="flex justify-between p-4 w-full">
-
-						<button class="btn btn-accent mt-4" (click)="runFlow()">Run Flow</button>
-						<button class="btn btn-primary mt-4" (click)="saveFlow()">Save</button>
-					</div>
+				@if(selectedFlow.flowTests.length) {
+				<div class="flex justify-between p-4 w-full">
+					<button class="btn btn-accent mt-4" (click)="runFlow()">Run Flow</button>
+					<button class="btn btn-primary mt-4" (click)="saveFlow()">Save</button>
+				</div>
 				} }
 			</div>
 		</div>
@@ -52,7 +51,10 @@
 						[cdkDropListConnectedTo]="['selectedTestsList']">
 						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Tests</li>
 						@for(test of allTests(); track $index; let i = $index) {
-						<app-test-list-item [test]="test"></app-test-list-item>
+						<app-test-list-item
+							(recordTest)="startTestRecording($event)"
+							(deleteTest)="deleteTest($event)"
+							[test]="test"></app-test-list-item>
 
 						}
 					</ul>

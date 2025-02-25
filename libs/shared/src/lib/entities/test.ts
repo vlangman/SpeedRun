@@ -7,4 +7,7 @@ export interface Test {
   flowTests: FlowTest[];
   createdAt: Date;
   updatedAt: Date;
+  
+  startUrl: string;
+	endUrl: string;
 }

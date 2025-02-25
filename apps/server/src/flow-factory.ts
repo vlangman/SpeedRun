@@ -8,7 +8,10 @@ export class FlowFactory {
 		const testsPath = path.join(__dirname, '../../../recordings');
 
 		let compiledCode =
-			'(async () => {\nconst browser = await chromium.launch({ headless: false });\nconst page = await browser.newPage();\n';
+			`(async () => {
+    			const browser = await chromium.launch({ headless: false });
+    			const context = await browser.newContext({ ignoreHTTPSErrors: true }); // Ignore HTTPS errors
+    			const page = await context.newPage();`;
 
 		const tests = flow.flowTests.map((f) => f.test);
 		const testCodeMap = new Map<number, string>();

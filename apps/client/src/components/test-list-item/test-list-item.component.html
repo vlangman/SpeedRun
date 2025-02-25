@@ -1,3 +1,19 @@
+
+
+
+<dialog #confirmDeleteModal id="confirm_delete_modal" class="modal">
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">Hello!</h3>
+		<h3> Are you sure you want to delete {{test.name}} </h3>
+
+		<div class="flex flex-between w-full">
+			<button class="btn" (click)="deleteTest.next(test)">Yes</button>
+			<button class="btn" (click)="confirmDeleteModal.close()">No</button>
+		</div>
+	</div>
+</dialog>
+
+
 <li
 	class="p-2 rounded-lg bg-slate-800"
 	cdkDrag
@@ -30,12 +46,26 @@
 						</g>
 					</svg>
 				</button>
+				<button class="btn btn-xs btn-square btn-danger" (click)="showDeleteModal()">
+                    <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <g
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke-width="2"
+                            fill="none"
+                            stroke="currentColor">
+                            <path d="M3 6h18M9 6v12m6-12v12M4 6l1-3h14l1 3M5 6v12a2 2 0 002 2h10a2 2 0 002-2V6"></path>
+                        </g>
+                    </svg>
+                </button>	
 			</div>
 		</span>
 		<small class="text-xs font-semibold text-gray-500">
 			{{ test.description }}
 		</small>
 	</div>
+	
 </li>
+
 
 

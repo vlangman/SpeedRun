@@ -10,5 +10,5 @@ export const AppDataSource = new DataSource({
   database: 'speedrun.db',
   entities: [Test, Flow,FlowTest],
   synchronize: process.env.NODE_ENV === 'development',
-  logging: process.env.NODE_ENV === 'development',
+  logging: process.env.NODE_ENV === 'development'
 });
