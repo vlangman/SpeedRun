@@ -1,6 +1,11 @@
-<div [class.bg-accent]="dragging" [class.bg-accent-content]="!dragging" class="w-full overflow-auto rounded-lg p-4">
+<div [class.bg-accent]="dragging" [class.bg-base-300]="!dragging" class="w-full overflow-auto rounded-lg p-4 flex">
+	<ul class="steps steps-vertical">
+		@for(flowTest of flow.flowTests; track $index) {
+			<li class="step step-primary"></li>
+		}
+	  </ul>
 	<ul
-		class="flex flex-col gap-2 max-h-[60vh] min-h-[10vh]"
+		class="flex flex-col gap-2 max-h-[60vh] min-h-[10vh] w-full"
 		cdkDropList
 		id="selectedTestsList"
 		#selectedTestsList="cdkDropList"
@@ -8,9 +13,17 @@
 		[cdkDropListConnectedTo]="['availableTestsList']"
 		(cdkDropListDropped)="drop($event)">
 		@for(flowTest of flow.flowTests; track $index) {
-		<app-test-list-item [test]="flowTest.test"></app-test-list-item>
+		<div class="flex gap-2 items-center p-2 w-full">
+			<div class="indicator w-full">
+				<span
+					class="indicator-item badge text-error font-bold badge-base-100 hover:text-white hover:badge-error cursor-pointer px-1.5 rounded-full"
+					(click)="removeTest(flowTest)">
+					<ng-icon name="heroMinusCircle"></ng-icon>
+				</span>
+				<app-test-list-item class="w-full" [test]="flowTest.test" [hideDelete]="true"></app-test-list-item>
+			</div>
+		</div>
 		} @if(flow.flowTests.length <= 0) {
-
 		<div class="flex flex-col justify-center items-center grow">
 			<h3 class="text-accent-100 text-md">(Drag in tests from the sidebar to add them to the flow.)</h3>
 		</div>

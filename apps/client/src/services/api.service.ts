@@ -69,6 +69,14 @@ export class ApiService extends AbstractHttpService {
 		}).pipe(this.Execute());
 	}
 
+	updateFlow(flow:Flow)
+	{
+		return this.PUT<Flow>({
+			endpoint: '/flows',
+			body: flow
+		}).pipe(this.Execute());
+	}
+
 	// Get all flows
 	getAllFlows(): Observable<Flow[]> {
 		return this.GET<Flow[]>({
@@ -77,10 +85,9 @@ export class ApiService extends AbstractHttpService {
 	}
 
 	// Execute a flow
-	executeFlow(flowName: string): Observable<{ results: any[] }> {
+	executeFlow(id: number): Observable<{ results: any[] }> {
 		return this.POST<{ results: any[] }>({
-			endpoint: '/flows/execute',
-			body: { flowName },
+			endpoint: `/flows/execute/${id}`,
 		}).pipe(this.Execute());
 	}
 
@@ -93,6 +100,8 @@ export class ApiService extends AbstractHttpService {
 		}).pipe(this.Execute());
 	}
 
+
+
 	executeTest(testId: number): Observable<{ results: any[] }> {
 		return this.POST<{ results: any[] }>({
 			endpoint: '/tests/execute',
@@ -102,7 +111,7 @@ export class ApiService extends AbstractHttpService {
 
 	startRecording(testId: number): Observable<Test> {
 		return this.POST<Test>({
-			endpoint: '/tests/start-recording',
+			endpoint: '/tests/record',
 			body: { id: testId },
 		}).pipe(this.Execute());
 	}

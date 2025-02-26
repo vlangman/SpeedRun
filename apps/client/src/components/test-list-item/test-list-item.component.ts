@@ -7,16 +7,19 @@ import { Subject } from 'rxjs';
 
 @Component({
 	selector: 'app-test-list-item',
-	imports: [CommonModule,DragDropModule],
+	imports: [CommonModule, DragDropModule],
 	templateUrl: './test-list-item.component.html',
 	styleUrl: './test-list-item.component.css',
 })
 export class TestListItemComponent {
 	@Input() test!: Test;
+	@Input() hideDelete: boolean = false;
+
 	@Output() deleteTest: Subject<Test> = new EventEmitter<Test>();
 	@Output() recordTest: Subject<Test> = new EventEmitter<Test>();
-	
-	@ViewChild('confirmDeleteModal',{static:true}) confirmDeleteModal!: ElementRef<any>;
+
+	@ViewChild('confirmDeleteModal', { static: true }) confirmDeleteModal!: ElementRef<any>;
+	@ViewChild('recordTestModal', { static: true }) recordTestModal!: ElementRef<any>;
 
 	constructor(private apiService: ApiService) {}
 
@@ -26,18 +29,24 @@ export class TestListItemComponent {
 		draggedElement.style.transform = 'none';
 	}
 
-	playTest(test:Test)
-	{
-		this.apiService.executeTest(test.id)
-		.subscribe((response) => {
+	playTest(test: Test) {
+		this.apiService.executeTest(test.id).subscribe((response) => {
 			console.log(response);
 		});
 	}
 
+	confirmRecordTest(test: Test) {
+		this.recordTest.next(test);
+		this.recordTestModal.nativeElement.close();
+	}
 
-	showDeleteModal(){
+	showRecordTestModal() {
+		console.log(this.recordTestModal);
+		this.recordTestModal.nativeElement.showModal();
+	}
+
+	showDeleteModal() {
 		console.log(this.confirmDeleteModal);
 		this.confirmDeleteModal.nativeElement.showModal();
 	}
-	
 }

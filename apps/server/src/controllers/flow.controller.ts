@@ -38,7 +38,9 @@ export class FlowController {
 
 			const flow = new Flow();
 			flow.name = flowName;
-			flow.description = description || '';
+			flow.description = description;
+			flow.createdAt = new Date();
+			flow.updatedAt = new Date();
 			flow.flowTests = [];
 
 			await flowRepository.save(flow);
@@ -66,7 +68,14 @@ export class FlowController {
 	static async getAllFlows(req: Request, res: Response) {
 		try {
 			const flowRepository = AppDataSource.getRepository(Flow);
-			const flows = await flowRepository.find({ relations: ['flowTests'] });
+			const flows = await flowRepository.find({ 
+				relations: ['flowTests', 'flowTests.test'],
+				order: {
+					flowTests:{
+						order: 'ASC'
+					}
+				}
+			});
 
 			const response: APIResponse<Flow[]> = {
 				result: flows,

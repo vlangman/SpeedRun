@@ -16,6 +16,8 @@
 		"@angular/platform-browser": "~19.1.0",
 		"@angular/platform-browser-dynamic": "~19.1.0",
 		"@angular/router": "~19.1.0",
+		"@ng-icons/core": "^30.3.0",
+		"@ng-icons/heroicons": "^30.3.0",
 		"@nx/angular": "^20.4.6",
 		"@playwright/test": "^1.50.1",
 		"@tailwindcss/typography": "^0.5.16",

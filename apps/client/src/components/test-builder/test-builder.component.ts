@@ -5,13 +5,14 @@ import { catchError, of, Subject, takeUntil } from 'rxjs';
 import { Flow, Test } from '@shared';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TestComposerComponent } from '../test-composer/test-composer.component';
-import { CdkDragStart, CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TestListItemComponent } from "../test-list-item/test-list-item.component";
 import { FlowTest } from 'libs/shared/src/lib/entities/flow-test';
+import { FlowListItemComponent } from "../flow-list-item/flow-list-item.component";
 
 @Component({
 	selector: 'app-test-builder',
-	imports: [CommonModule, FormsModule, ReactiveFormsModule, TestComposerComponent, DragDropModule, TestListItemComponent],
+	imports: [CommonModule, FormsModule, ReactiveFormsModule, TestComposerComponent, DragDropModule, TestListItemComponent, FlowListItemComponent],
 	templateUrl: './test-builder.component.html',
 	styleUrls: ['./test-builder.component.css'],
 })
@@ -129,7 +130,18 @@ export class TestBuilderComponent {
 
 	saveFlow()
 	{
-
+		this.apiService.updateFlow(this.selectedFlow!)
+		.pipe(
+			catchError((error) => {
+				console.error('Failed to save flow', error);
+				return of(null);
+			})
+		)
+		.subscribe(
+			(response) => {
+				console.log(response);
+			}
+		);
 	}
 
 
