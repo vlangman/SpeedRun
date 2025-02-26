@@ -1,7 +1,9 @@
 ###TODO
 
-- environments base URL, add environment and active env 
-- Make test save start and end URL 
-- make test open in newTab 
-- make test open in new Window
-- make force Goto for some tests 
+- [DONE] test with SIO 
+- [DONE]- make loader over everything
+- add url error feedback in composer
+- add test result feedback to UI 
+- add test Exporter and Importer 
+- add folders to store flows and tests
+- add text editor for spec.ts files 

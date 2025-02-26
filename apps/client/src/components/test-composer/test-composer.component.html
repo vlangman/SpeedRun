@@ -1,5 +1,5 @@
 <div [class.bg-accent]="dragging" [class.bg-base-300]="!dragging" class="w-full overflow-auto rounded-lg p-4 flex">
-	<ul class="steps steps-vertical">
+	<ul class="steps steps-vertical overflow-hidden">
 		@for(flowTest of flow.flowTests; track $index) {
 			<li class="step step-primary"></li>
 		}

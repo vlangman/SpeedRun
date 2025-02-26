@@ -27,10 +27,10 @@ export class FlowListItemComponent {
 	
 		playFlow(flow:Flow)
 		{
-			this.apiService.executeFlow(flow.id)
-			.subscribe((response) => {
-				console.log(response);
-			});
+			// this.apiService.executeFlow(flow.id)
+			// .subscribe((response) => {
+			// 	console.log(response);
+			// });
 		}
 	
 	

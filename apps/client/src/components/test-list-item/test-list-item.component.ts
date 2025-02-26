@@ -4,6 +4,7 @@ import { Test } from '@shared';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ApiService } from '../../services/api.service';
 import { Subject } from 'rxjs';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
 	selector: 'app-test-list-item',
@@ -21,7 +22,7 @@ export class TestListItemComponent {
 	@ViewChild('confirmDeleteModal', { static: true }) confirmDeleteModal!: ElementRef<any>;
 	@ViewChild('recordTestModal', { static: true }) recordTestModal!: ElementRef<any>;
 
-	constructor(private apiService: ApiService) {}
+	constructor(private apiService: ApiService,private toastService: ToastService) {}
 
 	dragEnded(event: any): void {
 		console.log('drag ended', event);
@@ -48,5 +49,19 @@ export class TestListItemComponent {
 	showDeleteModal() {
 		console.log(this.confirmDeleteModal);
 		this.confirmDeleteModal.nativeElement.showModal();
+	}
+
+	copyText(text: string) {
+		navigator.clipboard.writeText(text).then(() => {
+			console.log('Copied to clipboard');
+		});
+
+		this.toastService.openToast({
+			message: 'Copied',
+			type: 'success',
+			duration: 2000,
+		});
+
+		
 	}
 }

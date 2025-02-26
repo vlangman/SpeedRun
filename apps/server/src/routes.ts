@@ -15,7 +15,7 @@ router.post('/tests/record', TestController.recordTest);
 // Flow routes
 router.post('/flows', FlowController.createFlow);
 router.get('/flows', FlowController.getAllFlows);
-router.post('/flows/execute', FlowController.executeFlow);
+// router.post('/flows/execute', FlowController.executeFlow);
 router.post('/flows/test', FlowController.testFlow);
 router.put('/flows', FlowController.updateFlow);
 

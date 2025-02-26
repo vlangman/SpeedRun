@@ -7,7 +7,6 @@ import { APIResponse } from '@shared';
 import { QueryRunner, Repository } from 'typeorm';
 
 export class TestController {
-	
 	static async startCodeGenPlaywrightForTest(
 		queryRunner: QueryRunner,
 		test: Test,
@@ -21,7 +20,7 @@ export class TestController {
 		// check if on unix / linux or windows
 		const isWindows = process.platform === 'win32';
 		const launchCommand = isWindows
-			? `cmd /c "set DEBUG=pw:api && npx playwright codegen ${url} --output ${filePath}"`
+			? `cmd /c "set DEBUG=pw:api && npx playwright codegen ${url} --output ${filePath} --ignore-https-errors"`
 			: `DEBUG=pw:api npx playwright codegen ${url} --output ${filePath}`;
 
 		//start the codegen for the test using the url
@@ -40,7 +39,7 @@ export class TestController {
 
 				response.errors.push({ status: 500, message: 'Failed to start CodeGen', error: error.message });
 				//remove the file
-				execSync(`rm -f ${filePath}`);
+				TestController.removeFile(filePath);
 
 				return res.status(500).json(response);
 			} else {
@@ -83,7 +82,7 @@ export class TestController {
 			const sanitizedUrl = url.replace(/[^a-zA-Z0-9-_.:\/]/g, '');
 
 			const fileName = testName.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
-			exec(`npx playwright codegen ${sanitizedUrl} --output ${fileName}`, async (error, stdout, stderr) => {
+			exec(`npx playwright codegen ${sanitizedUrl} --output ${fileName} --ignore-https-errors`, async (error, stdout, stderr) => {
 				if (error) {
 					if (queryRunner.isTransactionActive) {
 						await queryRunner.rollbackTransaction();
@@ -148,9 +147,9 @@ export class TestController {
 		const fileName = test.name.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
 		const filePath = path.join(__dirname, '../../../recordings', `${fileName}.spec.ts`);
 
-		try{
-			execSync(`rm -f ${filePath}`);
-		}catch(error){
+		try {
+			TestController.removeFile(filePath);
+		} catch (error) {
 			console.error(error);
 		}
 
@@ -306,7 +305,7 @@ export class TestController {
 			//now remove the file
 			const filePath = path.join(__dirname, '../../../recordings', `${test.name}.spec.ts`);
 
-			execSync(`rm -f ${filePath}`);
+			TestController.removeFile(filePath);
 
 			await queryRunner.commitTransaction();
 
@@ -335,8 +334,6 @@ export class TestController {
 			await queryRunner.release();
 		}
 	}
-
-	
 
 	static async extractLastNavigationUrl(stderr: string) {
 		// const urlMatches = stdout.match(/https?:\/\/[^\s'"]+/g); // Match all URLs in stdout
@@ -368,5 +365,11 @@ export class TestController {
 		}
 
 		return null;
+	}
+	
+	static removeFile(filePath: string) {
+		const isWindows = process.platform === 'win32';
+		const command = isWindows ? `del ${filePath}` : `rm -f ${filePath}`;
+		execSync(command);
 	}
 }
