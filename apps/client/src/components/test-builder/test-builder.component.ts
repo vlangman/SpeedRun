@@ -86,6 +86,7 @@ export class TestBuilderComponent {
 	}
 
 	runFlow() {
+		console.log(this.selectedFlow)
 		this.apiService
 			.testFlow(this.selectedFlow!)
 			.pipe(
@@ -99,7 +100,11 @@ export class TestBuilderComponent {
 				if (response) {
 					this.testManager.flowTestRunHistory.update((history) => {
 						for (const result of response.flowTestResults) {
-							history[result.flowTestId] = result;
+							if(!history[result.flowId]) {
+								history[result.flowId] = {};
+							}
+
+							history[result.flowId][result.testId] = result;
 						}
 						return history;
 					});

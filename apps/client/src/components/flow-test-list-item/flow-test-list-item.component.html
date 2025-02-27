@@ -1,0 +1,77 @@
+<li
+	class="cursor-move bg-slate-800 rounded-lg"
+	cdkDrag
+	(cdkDragEnded)="dragEnded($event)"
+	(click)="clicked.emit(flowTest)">
+	<div
+		class="flex flex-col items-start justify-center p-2 px-4 rounded-lg"
+		[ngClass]="{
+			'bg-success-content': status === 'success',
+			'bg-error-content': status === 'failure',
+			'bg-warning-content': status === 'warning'
+		}">
+		<span class="flex justify-between w-full pt-1.5">
+			<p>{{ flowTest.test.name }}</p>
+			<div class="flex space-x-2">
+				<!-- <button
+					class="btn btn-xs btn-square btn-accent hover:scale-110 hover:text-white"
+					(click)="playTest(test)">
+					<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+						<g
+							stroke-linejoin="round"
+							stroke-linecap="round"
+							stroke-width="2"
+							fill="none"
+							stroke="currentColor">
+							<path d="M6 3L20 12 6 21 6 3z"></path>
+						</g>
+					</svg>
+				</button>
+				<button
+					class="btn btn-xs btn-square btn-error hover:scale-110 hover:text-white"
+					(click)="showRecordTestModal()">
+					<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+						<g
+							stroke-linejoin="round"
+							stroke-linecap="round"
+							stroke-width="2"
+							fill="none"
+							stroke="currentColor">
+							<circle cx="12" cy="12" r="10"></circle>
+						</g>
+					</svg>
+				</button> -->
+			</div>
+		</span>
+		<small class="text-xs font-semibold text-gray-500 pb-1">
+			{{ flowTest.test.description }}
+		</small>
+		<div class="flex flex-col w-full opacity-50 text-xs">
+			<div
+				class="hover:bg-base-300 hover:text-white hover:scale-110 cursor-pointer p-1 w-fit rounded-md"
+				(click)="copyText(flowTest.test.startUrl)">
+				Start:
+				<small>
+					{{ flowTest.test.startUrl }}
+				</small>
+			</div>
+			<div
+				class="hover:bg-base-300 hover:text-white hover:scale-110 cursor-pointer p-1 w-fit rounded-md"
+				(click)="copyText(flowTest.test.endUrl)">
+				End:
+				<small>
+					{{ flowTest.test.endUrl }}
+				</small>
+			</div>
+		</div>
+
+		@if(status === 'failure') { @if(testManager.flowTestRunHistory()[flowTest.flow.id]; as flowRunHistory) {
+			{{flowRunHistory | json}}
+		<div class="mockup-code w-full">
+			<pre class="max-w-full overflow-x-auto whitespace-pre-wrap h-fit">
+				<code class="pl-8">{{ flowRunHistory[flowTest.test.id].error?.trim() }}</code>
+			</pre>
+		</div>
+		} }
+	</div>
+</li>

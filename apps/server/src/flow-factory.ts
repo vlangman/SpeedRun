@@ -27,7 +27,7 @@ try {
 
 		const testsPath = path.join(__dirname, '../../../recordings');
 
-		let compiledCode = `const { test, expect } = require('@playwright/test');
+		let compiledCode = `const { test, expect, Browser, BrowserContext, Page } = require('@playwright/test');
 test.use({
 	ignoreHTTPSErrors: true
 });
@@ -99,10 +99,12 @@ test('${flow.name}', async ({ page }) => {`;
 		};
 
 		const allFlowTests: FlowTestRunResult[] = [];
+		
 		for (const flowTest of flow.flowTests) {
+			console.log(flowTest);
 			allFlowTests.push({
 				testId: flowTest.test.id,
-				flowTestId: flowTest.id,
+				flowId: flowTest.flow.id,
 				error: null,
 				success: false,
 			});
@@ -122,7 +124,7 @@ test('${flow.name}', async ({ page }) => {`;
 			const testRan = stdout.includes(`SUCCESSFUL_FLOW_TEST_EXECUTION:${flowTest.id}`);
 			const testFailed = stdout.includes(`FAILED_FLOW_TEST_EXECUTION:${flowTest.id}`);
 
-			const flowTestResult = allFlowTests.find((t) => t.flowTestId === flowTest.id);
+			const flowTestResult = allFlowTests.find((t) => t.flowId === flowTest.flow.id && t.testId === flowTest.test.id);
 			if (!flowTestResult)
 				throw new Error(`Flow test result with id ${flowTest.id} not found in flow ${flow.name}`);
 

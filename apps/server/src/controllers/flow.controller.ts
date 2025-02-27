@@ -72,7 +72,7 @@ export class FlowController {
 		try {
 			const flowRepository = AppDataSource.getRepository(Flow);
 			const flows = await flowRepository.find({
-				relations: ['flowTests', 'flowTests.test'],
+				relations: ['flowTests', 'flowTests.test', 'flowTests.flow'],
 				order: {
 					flowTests: {
 						order: 'ASC',

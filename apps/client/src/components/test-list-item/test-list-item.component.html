@@ -36,11 +36,7 @@
 	cdkDrag
 	(cdkDragEnded)="dragEnded($event)"
 	(click)="clicked.emit(test)">
-	<div class="flex flex-col items-start justify-center p-2 px-4 rounded-lg" [ngClass]="{
-		'bg-success-content': status === 'success',
-		'bg-error-content': status === 'failure',
-		'bg-warning-content': status === 'warning'
-	}">
+	<div class="flex flex-col items-start justify-center p-2 px-4 rounded-lg">
 		<span class="flex justify-between w-full pt-1.5">
 			<p>{{ test.name }}</p>
 			<div class="flex space-x-2">
@@ -113,12 +109,6 @@
 			</div>
 		</div>
 
-		@if(status === 'failure' && flowTestId) {
-		<div class="mockup-code w-full">
-			<pre class="max-w-full overflow-x-auto whitespace-pre-wrap h-fit">
-				<code class="pl-8">{{ testManager.flowTestRunHistory()[flowTestId].error?.trim() }}</code>
-			</pre>
-		</div>
-		}
+		
 	</div>
 </li>

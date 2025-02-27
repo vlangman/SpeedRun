@@ -11,8 +11,8 @@ export interface TestRunHistory {
 @Injectable()
 export class TestManagerService {
 	selectedTest: Test | null = null;
-    //flowTestId to FlowRunResult
-	flowTestRunHistory: WritableSignal<Record<number, FlowTestRunResult>> = signal({});
+	//FlowID TO TestID to FlowRunResult
+	flowTestRunHistory: WritableSignal< Record<number,Record<number, FlowTestRunResult>>> = signal({});
 
 	allTests: WritableSignal<Test[]> = signal([]);
 	allFlows: WritableSignal<Flow[]> = signal([]);
@@ -33,5 +33,4 @@ export class TestManagerService {
 	}
 
 
-    
 }

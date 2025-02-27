@@ -5,7 +5,7 @@ export interface FlowRunResult {
 
 export interface FlowTestRunResult {
 	testId: number;
-	flowTestId: number;
+	flowId: number;
 	success: boolean;
 	error: string | null;
 }

@@ -23,7 +23,10 @@
 					(click)="removeTest(flowTest)">
 					<ng-icon name="heroMinusCircle"></ng-icon>
 				</span>
-				<app-test-list-item class="w-full" [test]="flowTest.test" [hideDelete]="true" [status]="flowRunStatusMap[flowTest.id]" [flowTestId]="flowTest.id"></app-test-list-item>
+				<!-- <app-test-list-item class="w-full" [test]="flowTest.test" [hideDelete]="true" [status]="flowRunStatusMap[flowTest.id]" [flowTestId]="flowTest.id"></app-test-list-item> -->
+				 <app-flow-test-list-item [flowTest]="flowTest">
+					
+				 </app-flow-test-list-item>
 			</div>
 		</div>
 		} @if(flow.flowTests.length <= 0) {

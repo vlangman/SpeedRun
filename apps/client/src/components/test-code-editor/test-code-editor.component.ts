@@ -25,7 +25,6 @@ export class TestCodeEditorComponent {
 	originalCode = '';
 	aceEditor!: ace.Editor;
 
-
 	constructor(private api: ApiService) {
 
 	}
