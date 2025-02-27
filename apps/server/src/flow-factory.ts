@@ -20,6 +20,7 @@ try {
 } catch (error) {
 	console.log('FAILED_FLOW_TEST_EXECUTION:${flowtest.id}');
 	console.error(error.error?.message || error.message);
+	throw error;
 }
 `;
 		}

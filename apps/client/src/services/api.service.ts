@@ -62,18 +62,17 @@ export class ApiService extends AbstractHttpService {
 	}
 
 	// Create a new test flow
-	createFlow(flowName: string, testNames: string[]): Observable<Flow> {
+	createFlow(flowName: string, description: string): Observable<Flow> {
 		return this.POST<Flow>({
 			endpoint: '/flows',
-			body: { flowName, testNames },
+			body: { flowName, description },
 		}).pipe(this.Execute());
 	}
 
-	updateFlow(flow:Flow)
-	{
+	updateFlow(flow: Flow) {
 		return this.PUT<Flow>({
 			endpoint: '/flows',
-			body: flow
+			body: flow,
 		}).pipe(this.Execute());
 	}
 
@@ -92,15 +91,22 @@ export class ApiService extends AbstractHttpService {
 	// }
 
 	// test a flows test execution before saving it
-	testFlow(flow:Flow): Observable<FlowRunResult>
-	{
+	testFlow(flow: Flow): Observable<FlowRunResult> {
 		return this.POST<FlowRunResult>({
 			endpoint: '/flows/test',
 			body: { flow },
 		}).pipe(this.Execute());
 	}
 
-
+	saveTestCode(testId: number, code: string): Observable<Test> {
+		return this.PUT<Test>({
+			endpoint: '/tests/code',
+			body: {
+				id: testId,
+				code: code,
+			},
+		}).pipe(this.Execute());
+	}
 
 	executeTest(testId: number): Observable<{ results: any[] }> {
 		return this.POST<{ results: any[] }>({
@@ -115,7 +121,6 @@ export class ApiService extends AbstractHttpService {
 			body: { id: testId },
 		}).pipe(this.Execute());
 	}
-
 
 	//UTILS
 	private Execute<Response>(options?: { showLoader: boolean; hideErrorToast?: boolean; returnResponse?: boolean }) {

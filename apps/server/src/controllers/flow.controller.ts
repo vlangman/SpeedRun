@@ -84,6 +84,10 @@ export class FlowController {
 				result: flows,
 				errors: [],
 			};
+
+	
+	
+
 			res.json(response);
 		} catch (error) {
 			console.log('Failed to retrieve flows');
@@ -273,22 +277,22 @@ export class FlowController {
 			console.log(`stdout: ${stdout} \n\n`);
 			console.error(`stderr: ${stderr}\n\n`);
 
-			if (error) {
-				console.error(`EXEC ERROR: ${error}`);
-				const response: APIResponse<null> = {
-					result: null,
-					errors: [
-						{
-							status: 500,
-							message: stdout,
-							error: error,
-						},
-					],
-				};
-				//remove the file
-				exec(deleteFileCommand);
-				return res.status(500).json(response);
-			}
+			// if (error) {
+			// 	console.error(`EXEC ERROR: ${error}`);
+			// 	const response: APIResponse<null> = {
+			// 		result: null,
+			// 		errors: [
+			// 			{
+			// 				status: 500,
+			// 				message: stdout,
+			// 				error: error,
+			// 			},
+			// 		],
+			// 	};
+			// 	//remove the file
+			// 	exec(deleteFileCommand);
+			// 	return res.status(500).json(response);
+			// }
 
 			// extract the test results
 			const result = FlowFactory.buildFlowRunResult(stdout, stderr, flow);

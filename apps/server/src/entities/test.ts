@@ -27,4 +27,7 @@ export class Test implements TestInterface {
 
 	@Column()
 	endUrl: string;
+
+	
+	code: string;
 }

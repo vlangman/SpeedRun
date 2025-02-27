@@ -9,7 +9,6 @@ import { LoaderService } from '../services/loader.service';
 import { ToastService } from '../services/toast.service';
 import { TestManagerService } from '../services/test-manager.service';
 
-
 export const appConfig: ApplicationConfig = {
 	providers: [
 		provideZoneChangeDetection({ eventCoalescing: true }),
@@ -19,7 +18,6 @@ export const appConfig: ApplicationConfig = {
 			provide: APP_CONFIG,
 			useValue: environment
 		},
-
 		ApiService,
 		AuthenticationService,
 		LoaderService,

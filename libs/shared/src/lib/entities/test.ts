@@ -10,4 +10,6 @@ export interface Test {
   
   startUrl: string;
 	endUrl: string;
+
+  code: string;
 }

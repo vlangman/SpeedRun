@@ -11,6 +11,7 @@ router.post('/tests', TestController.addTest);
 router.delete('/tests/:id', TestController.deleteTest);
 router.post('/tests/execute', TestController.executeTest);
 router.post('/tests/record', TestController.recordTest);
+router.put('/tests/code', TestController.updateTestCode);
 
 // Flow routes
 router.post('/flows', FlowController.createFlow);

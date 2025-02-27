@@ -5,6 +5,7 @@ import * as path from 'path';
 import { exec, execSync } from 'child_process';
 import { APIResponse } from '@shared';
 import { QueryRunner, Repository } from 'typeorm';
+import fs from 'fs';
 
 export class TestController {
 	static async startCodeGenPlaywrightForTest(
@@ -82,31 +83,34 @@ export class TestController {
 			const sanitizedUrl = url.replace(/[^a-zA-Z0-9-_.:\/]/g, '');
 
 			const fileName = testName.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
-			exec(`npx playwright codegen ${sanitizedUrl} --output ${fileName} --ignore-https-errors`, async (error, stdout, stderr) => {
-				if (error) {
-					if (queryRunner.isTransactionActive) {
-						await queryRunner.rollbackTransaction();
+			exec(
+				`npx playwright codegen ${sanitizedUrl} --output ${fileName} --ignore-https-errors`,
+				async (error, stdout, stderr) => {
+					if (error) {
+						if (queryRunner.isTransactionActive) {
+							await queryRunner.rollbackTransaction();
+						}
+						const response: APIResponse<null> = {
+							result: null,
+							errors: [{ status: 500, message: 'Failed to start CodeGen', error: error.message }],
+						};
+						return res.status(500).json(response);
 					}
-					const response: APIResponse<null> = {
-						result: null,
-						errors: [{ status: 500, message: 'Failed to start CodeGen', error: error.message }],
+
+					const test = new Test();
+					test.name = testName;
+					test.description = description || '';
+					await testRepository.save(test);
+
+					await queryRunner.commitTransaction();
+
+					const response: APIResponse<Test> = {
+						result: test,
+						errors: [],
 					};
-					return res.status(500).json(response);
+					res.json(response);
 				}
-
-				const test = new Test();
-				test.name = testName;
-				test.description = description || '';
-				await testRepository.save(test);
-
-				await queryRunner.commitTransaction();
-
-				const response: APIResponse<Test> = {
-					result: test,
-					errors: [],
-				};
-				res.json(response);
-			});
+			);
 		} catch (error) {
 			if (queryRunner.isTransactionActive) {
 				await queryRunner.rollbackTransaction();
@@ -157,6 +161,55 @@ export class TestController {
 		TestController.startCodeGenPlaywrightForTest(queryRunner, test, testRepository, res);
 	}
 
+	static async updateTestCode(req: Request, res: Response) {
+		try {
+			const testRepository = AppDataSource.getRepository(Test);
+			const { code, id } = req.body;
+
+			const test = await testRepository.findOneBy({ id });
+			if (!test) throw new Error(`Test with id ${id} not found`);
+
+			const fileName = test.name.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
+			const filePath = path.join(__dirname, '../../../recordings', `${fileName}.spec.ts`);
+
+
+			fs.writeFileSync(filePath, code, { encoding: 'utf8' });
+			
+
+			// //write the code to the file
+			// await new Promise<void>((resolve, reject) => {
+			// 	const command = process.platform === 'win32' ? `echo ${code} > ${filePath}` : `echo '${code}' > ${filePath}`;
+			// 	exec(command, (error, stdout, stderr) => {
+					
+			// 		console.log('Code updated');
+			// 		console.log('stdout:', stdout);
+			// 		console.error('stderr:', stderr);
+
+			// 		if (error) {
+			// 			reject(error);
+			// 		} else {
+			// 			resolve();
+			// 		}
+			// 	});
+			// });
+
+			res.send({ result: true, errors: [] });
+		} catch (error) {
+			const response: APIResponse<null> = {
+				result: null,
+				errors: [
+					{
+						status: 500,
+						message: 'Internal server error',
+						error: error instanceof Error ? error.message : 'Unknown error',
+					},
+				],
+			};
+
+			res.status(500).json(response);
+		}
+	}
+
 	//get all tests
 	static async getAllTests(req: Request, res: Response) {
 		try {
@@ -166,6 +219,29 @@ export class TestController {
 				result: tests,
 				errors: [],
 			};
+
+			//fetch the code for each test
+			for (const test of tests) {
+				const fileName = test.name.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
+				const filePath = path.join(__dirname, '../../../recordings', `${fileName}.spec.ts`);
+
+				try {
+					const code = await new Promise<string>((resolve, reject) => {
+						const command = process.platform === 'win32' ? `type ${filePath}` : `cat ${filePath}`;
+						exec(command, (error, stdout, stderr) => {
+							if (error) {
+								reject(error);
+							} else {
+								resolve(stdout);
+							}
+						});
+					});
+					test.code = code;
+				} catch (error) {
+					console.error(error);
+				}
+			}
+
 			res.json(response);
 		} catch (error) {
 			const response: APIResponse<null> = {
@@ -198,7 +274,7 @@ export class TestController {
 			const fileName = name.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
 			const filePath = path.join(__dirname, '../../../recordings', `${fileName}.spec.ts`);
 
-			const test: Omit<Test, 'id'> = {
+			const test: Omit<Test, 'id' | 'code'> = {
 				createdAt: new Date(),
 				description: description,
 				name: name,
@@ -366,7 +442,7 @@ export class TestController {
 
 		return null;
 	}
-	
+
 	static removeFile(filePath: string) {
 		const isWindows = process.platform === 'win32';
 		const command = isWindows ? `del ${filePath}` : `rm -f ${filePath}`;

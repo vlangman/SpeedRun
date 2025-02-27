@@ -1,11 +1,14 @@
 <div [class.bg-accent]="dragging" [class.bg-base-300]="!dragging" class="w-full overflow-auto rounded-lg p-4 flex">
 	<ul class="steps steps-vertical overflow-hidden">
 		@for(flowTest of flow.flowTests; track $index) {
-			<li class="step step-primary"></li>
+			<li class="step step-primary "
+				[ngClass]="{ 'step-success': flowRunStatusMap[flowTest.id] === 'success', 'step-error': flowRunStatusMap[flowTest.id] === 'failure' }">
+
+			</li>
 		}
 	  </ul>
 	<ul
-		class="flex flex-col gap-2 max-h-[60vh] min-h-[10vh] w-full"
+		class="flex flex-col gap-2  min-h-[10vh] w-full"
 		cdkDropList
 		id="selectedTestsList"
 		#selectedTestsList="cdkDropList"

@@ -10,18 +10,20 @@ import { TestListItemComponent } from '../test-list-item/test-list-item.componen
 import { FlowTest } from 'libs/shared/src/lib/entities/flow-test';
 import { FlowListItemComponent } from '../flow-list-item/flow-list-item.component';
 import { TestManagerService } from '../../services/test-manager.service';
+import { TestCodeEditorComponent } from "../test-code-editor/test-code-editor.component";
 
 @Component({
 	selector: 'app-test-builder',
 	imports: [
-		CommonModule,
-		FormsModule,
-		ReactiveFormsModule,
-		TestComposerComponent,
-		DragDropModule,
-		TestListItemComponent,
-		FlowListItemComponent,
-	],
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TestComposerComponent,
+    DragDropModule,
+    TestListItemComponent,
+    FlowListItemComponent,
+    TestCodeEditorComponent
+],
 	templateUrl: './test-builder.component.html',
 	styleUrls: ['./test-builder.component.css'],
 })
@@ -42,6 +44,7 @@ export class TestBuilderComponent {
 		});
 	});
 	selectedFlow: Flow | null = null;
+	selectedTest: Test | null = null;
 	selectedFlowRunResult: FlowRunResult | null = null;
 
 	newTestForm: FormGroup = new FormGroup({
@@ -103,6 +106,17 @@ export class TestBuilderComponent {
 					this.selectedFlowRunResult = response;
 				}
 			});
+	}
+
+	selectFlow(flow: Flow) {
+		this.selectedTest = null;
+		this.selectedFlow = flow;
+		this.selectedFlowRunResult = null;
+	}
+
+	selectTest(test: Test) {
+		this.selectedFlow = null;
+		this.selectedTest = test;
 	}
 
 	startTestRecording(test: Test) {

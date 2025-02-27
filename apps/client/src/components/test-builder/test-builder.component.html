@@ -5,24 +5,29 @@
 		<ng-container *ngTemplateOutlet="WelcomePage"></ng-container>
 		}
 
-		<div class="flex-col p-4">
-			<div class="flex flex-col gap-2">
-				@if(selectedFlow; as flow) {
+		<div class="flex-col p-4 h-full">
+			<div class="flex flex-col gap-2 h-full">
+				@if(selectedTest; as test) {
+				<app-test-code-editor class="h-[80%]" [test]="test"></app-test-code-editor>
+				} @if(selectedFlow && !selectedTest) {
 
 				<div class="flex flex-col w-full items-center">
 					<h1 class="text-5xl mb-10 px-2 text-neutral-content">
-						{{ flow.name }}
+						{{ selectedFlow.name }}
 					</h1>
 					<small class="text-gray-400 min-w-fit">
-						last saved: {{ flow.updatedAt | date : 'dd MMM HH:mm' }}
+						last saved: {{ selectedFlow.updatedAt | date : 'dd MMM HH:mm' }}
 					</small>
 				</div>
 
 				<div class="divider divide-neutral-content w-full">Flow builder</div>
 				<!-- {{selectedFlowRunResult | json}} -->
-				<app-test-composer class="w-full flex justify-center" [flow]="selectedFlow" [flowRunResult]="selectedFlowRunResult"></app-test-composer>
+				<app-test-composer
+					class="w-full flex justify-center"
+					[flow]="selectedFlow"
+					[flowRunResult]="selectedFlowRunResult"></app-test-composer>
 
-				@if(selectedFlow.flowTests.length) {
+				@if(selectedFlow && selectedFlow.flowTests.length) {
 				<div class="flex justify-between p-4 w-full">
 					<button class="btn btn-accent mt-4" (click)="runFlow()">Run Flow</button>
 					<button class="btn btn-primary mt-4" (click)="saveFlow()">Save</button>
@@ -58,6 +63,7 @@
 						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Tests</li>
 						@for(test of testManager.allTests(); track $index; let i = $index) {
 						<app-test-list-item
+							(clicked)="selectTest($event)"
 							(recordTest)="startTestRecording($event)"
 							(deleteTest)="deleteTest($event)"
 							[test]="test"></app-test-list-item>
@@ -82,7 +88,7 @@
 					<ul class="list bg-base-100 flex flex-col gap-2">
 						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Flows</li>
 						@for(flow of testManager.allFlows(); track $index) {
-						<app-flow-list-item (clicked)="selectedFlow = $event" [flow]="flow"></app-flow-list-item>
+						<app-flow-list-item (clicked)="selectFlow($event)" [flow]="flow"></app-flow-list-item>
 
 						}
 					</ul>

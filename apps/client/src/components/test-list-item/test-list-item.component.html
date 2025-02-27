@@ -31,15 +31,16 @@
 </dialog>
 
 <li
-	[ngClass]="{
+	
+	class=" cursor-move bg-slate-800 rounded-lg"
+	cdkDrag
+	(cdkDragEnded)="dragEnded($event)"
+	(click)="clicked.emit(test)">
+	<div class="flex flex-col items-start justify-center p-2 px-4 rounded-lg" [ngClass]="{
 		'bg-success-content': status === 'success',
 		'bg-error-content': status === 'failure',
 		'bg-warning-content': status === 'warning'
-	}"
-	class="rounded-lg cursor-move bg-slate-800"
-	cdkDrag
-	(cdkDragEnded)="dragEnded($event)">
-	<div class="flex flex-col items-start justify-center p-2 px-4">
+	}">
 		<span class="flex justify-between w-full pt-1.5">
 			<p>{{ test.name }}</p>
 			<div class="flex space-x-2">
@@ -67,7 +68,7 @@
 							stroke-width="2"
 							fill="none"
 							stroke="currentColor">
-							<circle cx="12" cy="12" r="10"></circle>
+								<circle cx="12" cy="12" r="10"></circle>
 						</g>
 					</svg>
 				</button>
@@ -113,10 +114,11 @@
 		</div>
 
 		@if(status === 'failure' && flowTestId) {
-		<div class="mockup-code w-full ">
-			<code class="pl-8">{{ testManager.flowTestRunHistory()[flowTestId].error?.trim() }}</code>
+		<div class="mockup-code w-full">
+			<pre class="max-w-full overflow-x-auto whitespace-pre-wrap h-fit">
+				<code class="pl-8">{{ testManager.flowTestRunHistory()[flowTestId].error?.trim() }}</code>
+			</pre>
 		</div>
-
 		}
 	</div>
 </li>

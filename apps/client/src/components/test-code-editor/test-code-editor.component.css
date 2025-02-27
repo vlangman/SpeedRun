@@ -1,0 +1,5 @@
+.app-ace-editor {
+    min-height: 300px; /* Prevents it from being too small */
+    height: 100%; /* Takes up full height of parent */
+    width: 100%; /* Takes up full width */
+  }

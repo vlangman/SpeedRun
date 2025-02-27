@@ -21,6 +21,7 @@ export class TestListItemComponent {
 
 	@Output() deleteTest: Subject<Test> = new EventEmitter<Test>();
 	@Output() recordTest: Subject<Test> = new EventEmitter<Test>();
+	@Output() clicked = new EventEmitter<Test>();
 
 	@ViewChild('confirmDeleteModal', { static: true }) confirmDeleteModal!: ElementRef<any>;
 	@ViewChild('recordTestModal', { static: true }) recordTestModal!: ElementRef<any>;
