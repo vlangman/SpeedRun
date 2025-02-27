@@ -1,8 +1,11 @@
 export interface FlowRunResult {
-    success: boolean;
-    testResults: {
-        testId: number;
-        success: boolean;
-        error: string | null;
-    }[]
+	success: boolean;
+	flowTestResults: FlowTestRunResult[];
+}
+
+export interface FlowTestRunResult {
+	testId: number;
+	flowTestId: number;
+	success: boolean;
+	error: string | null;
 }

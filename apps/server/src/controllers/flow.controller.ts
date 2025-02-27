@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 
-import { APIResponse } from '@shared';
+import { APIResponse, FlowRunResult } from '@shared';
 import { Flow } from '../entities/flow';
 import { FlowFactory } from '../flow-factory';
 import { chromium, expect } from '@playwright/test';
@@ -254,11 +254,10 @@ export class FlowController {
 	static startCodeGenPlaywrightForFlow(flow: Flow, res: Response) {
 		console.log('Starting codegen for flow');
 		console.log(flow);
-		const fileName = flow.name.trim().replace(/[^a-zA-Z0-9-_.]/g, '')
+		const fileName = flow.name.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
 		const filePath = path.join(__dirname, '../../../recordings', `${fileName}.flow.spec.ts`).replace(/\\/g, '/');
 
 		const code = FlowFactory.compileFlow(flow);
-		console.log(code + '\n\n');
 		//save the file
 		fs.writeFileSync(filePath, code, 'utf-8');
 
@@ -267,23 +266,22 @@ export class FlowController {
 		const deleteFileCommand = isWindows ? `del ${filePath}` : `rm ${filePath}`;
 
 		// add --ui for ui mode or --headed for headed mode
-		const launchCommand = `npx playwright test  ${filePath} --headed"`;
-
+		const launchCommand = `npx playwright test  ${filePath} --headed`;
+		// console.log(code)
 		//start the test for the flows generated code
 		exec(launchCommand, async (error, stdout, stderr) => {
-			
 			console.log(`stdout: ${stdout} \n\n`);
 			console.error(`stderr: ${stderr}\n\n`);
 
 			if (error) {
-				console.error(`exec error: ${error}`);
+				console.error(`EXEC ERROR: ${error}`);
 				const response: APIResponse<null> = {
 					result: null,
 					errors: [
 						{
 							status: 500,
 							message: stdout,
-							error: new Error(stdout)
+							error: error,
 						},
 					],
 				};
@@ -292,13 +290,14 @@ export class FlowController {
 				return res.status(500).json(response);
 			}
 
+			// extract the test results
+			const result = FlowFactory.buildFlowRunResult(stdout, stderr, flow);
 
-			const response: APIResponse<string> = {
-				result: stdout,
+			const response: APIResponse<FlowRunResult> = {
+				result: result,
 				errors: [],
 			};
 			res.json(response);
 		});
 	}
-
 }

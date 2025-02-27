@@ -2,20 +2,23 @@ import path from 'path';
 import { Flow } from './entities/flow';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
-import { FlowRunResult, Test } from '@shared';
+import { FlowRunResult, FlowTestRunResult, Test } from '@shared';
+import { FlowTest } from './entities/flow-test';
 
 export class FlowFactory {
 	static compileFlow(flow: Flow): string {
-		function wrapTestCodeInTryCatch(test: Test, testCode: string): string {
+		function wrapTestCodeInTryCatch(flowtest: FlowTest, testCode: string): string {
 			return `
 try {
+	
+	console.log('EXECUTING_FLOW_TEST_ID:${flowtest.id}');
 
 	${testCode}
 
-	console.log('SUCCESSFUL_TEST_EXECUTION:${test.id}');
+	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:${flowtest.id}');
 
 } catch (error) {
-	console.log('FAILED_TEST_EXECUTION:${test.id}');
+	console.log('FAILED_FLOW_TEST_EXECUTION:${flowtest.id}');
 	console.error(error.error?.message || error.message);
 }
 `;
@@ -71,12 +74,12 @@ test('${flow.name}', async ({ page }) => {`;
 					const restOfCode = slicedCode.slice(isFirstLineEnd + 1);
 					//replace page.goto with page.waitForURL
 					// const newFirstLine = firstLine.replace('page.goto', 'page.waitForURL');
-					compiledCode += wrapTestCodeInTryCatch(flowTest.test, restOfCode) + '\n';
+					compiledCode += wrapTestCodeInTryCatch(flowTest, restOfCode) + '\n';
 				} else {
-					compiledCode += wrapTestCodeInTryCatch(flowTest.test, slicedCode) + '\n';
+					compiledCode += wrapTestCodeInTryCatch(flowTest, slicedCode) + '\n';
 				}
 			} else {
-				compiledCode += wrapTestCodeInTryCatch(flowTest.test, slicedCode) + '\n';
+				compiledCode += wrapTestCodeInTryCatch(flowTest, slicedCode) + '\n';
 			}
 
 			index++;
@@ -88,27 +91,47 @@ test('${flow.name}', async ({ page }) => {`;
 
 	static buildFlowRunResult(stdout: string, stderr: string, flow: Flow): FlowRunResult {
 		// extract the results of the test from stdOut
-		const executeRegex = /EXECUTING_TEST_ID: (\d+)([\s\S]*?)(?=EXECUTING_TEST_ID: \d+|$)/g;
+		const executeRegex = /EXECUTING_FLOW_TEST_ID:(\d+)/g;
 		const results: FlowRunResult = {
 			success: true,
-			testResults: [],
+			flowTestResults: [],
 		};
+
+		const allFlowTests: FlowTestRunResult[] = [];
+		for (const flowTest of flow.flowTests) {
+			allFlowTests.push({
+				testId: flowTest.test.id,
+				flowTestId: flowTest.id,
+				error: null,
+				success: false,
+			});
+		}
 
 		let match;
 		while ((match = executeRegex.exec(stdout)) !== null) {
-			const testId = parseInt(match[1]);
-			const testResult = match[2];
-			const test = flow.flowTests.find((t) => t.test.id === testId);
-			if (test) {
-				const testRan = testResult.includes(`SUCCESSFUL_TEST_EXECUTION:${test.id}`);
-				const testFailed = testResult.includes(`FAILED_TEST_EXECUTION:${test.id}`);
-				results.testResults.push({
-					testId: test.test.id,
-					error: testFailed ? stderr : null,
-					success: !testFailed
-				});
-			}
+			const flowTestId = parseInt(match[1]);
+			const flowTest = flow.flowTests.find((t) => t.id === flowTestId);
+
+			if (!flowTest) throw new Error(`Flow test with id ${flowTestId} not found in flow ${flow.name}`);
+			// console.log(match[1]);
+			// console.log(match[2]);
+			// console.log(stdout)
+
+			// console.log(`TEST_ID:${flowTest.test.id}`);
+			const testRan = stdout.includes(`SUCCESSFUL_FLOW_TEST_EXECUTION:${flowTest.id}`);
+			const testFailed = stdout.includes(`FAILED_FLOW_TEST_EXECUTION:${flowTest.id}`);
+
+			const flowTestResult = allFlowTests.find((t) => t.flowTestId === flowTest.id);
+			if (!flowTestResult)
+				throw new Error(`Flow test result with id ${flowTest.id} not found in flow ${flow.name}`);
+
+			flowTestResult.success = testRan;
+			flowTestResult.error = testFailed ? stderr : null;
 		}
+
+		results.success = allFlowTests.every((t) => t.success);
+		results.flowTestResults = allFlowTests;
+		return results;
 	}
 
 	//MODULE EXPORT ATTEMPT

@@ -5,7 +5,7 @@ import { LoaderService } from './loader.service';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { ToastService } from './toast.service';
-import { Flow, Test } from '@shared';
+import { Flow, FlowRunResult, Test } from '@shared';
 
 export const APP_CONFIG: InjectionToken<any> = new InjectionToken('APP_CONFIG');
 
@@ -92,9 +92,9 @@ export class ApiService extends AbstractHttpService {
 	// }
 
 	// test a flows test execution before saving it
-	testFlow(flow:Flow)
+	testFlow(flow:Flow): Observable<FlowRunResult>
 	{
-		return this.POST<{ results: any[] }>({
+		return this.POST<FlowRunResult>({
 			endpoint: '/flows/test',
 			body: { flow },
 		}).pipe(this.Execute());

@@ -1,7 +1,7 @@
 <div class="drawer drawer-open drawer-end">
 	<input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
 	<div class="flex flex-col">
-		@if(!allTests().length || !allFlows().length) {
+		@if(!testManager.allTests().length || !testManager.allFlows().length) {
 		<ng-container *ngTemplateOutlet="WelcomePage"></ng-container>
 		}
 
@@ -19,8 +19,8 @@
 				</div>
 
 				<div class="divider divide-neutral-content w-full">Flow builder</div>
-
-				<app-test-composer class="w-full flex justify-center" [flow]="selectedFlow"></app-test-composer>
+				<!-- {{selectedFlowRunResult | json}} -->
+				<app-test-composer class="w-full flex justify-center" [flow]="selectedFlow" [flowRunResult]="selectedFlowRunResult"></app-test-composer>
 
 				@if(selectedFlow.flowTests.length) {
 				<div class="flex justify-between p-4 w-full">
@@ -41,7 +41,7 @@
 					name="divider_tabs"
 					class="tab w-1/2"
 					aria-label="Tests"
-					[checked]="!allTests().length ? 'checked' : ''" />
+					[checked]="!testManager.allTests().length ? 'checked' : ''" />
 				<div class="tab-content bg-base-100 border-base-300 p-2">
 					<li>
 						<button class="btn btn-primary" onclick="create_test_modal.showModal()">
@@ -56,7 +56,7 @@
 						[cdkDropListData]="testFlows()"
 						[cdkDropListConnectedTo]="['selectedTestsList']">
 						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Tests</li>
-						@for(test of allTests(); track $index; let i = $index) {
+						@for(test of testManager.allTests(); track $index; let i = $index) {
 						<app-test-list-item
 							(recordTest)="startTestRecording($event)"
 							(deleteTest)="deleteTest($event)"
@@ -70,7 +70,7 @@
 					name="divider_tabs"
 					class="tab w-1/2"
 					aria-label="Flows"
-					[checked]="allTests().length ? 'checked' : ''" />
+					[checked]="testManager.allTests().length ? 'checked' : ''" />
 				<div class="tab-content bg-base-100 border-base-300 p-2">
 					<li>
 						<button class="btn btn-primary" onclick="create_flow_modal.showModal()">
@@ -81,7 +81,7 @@
 
 					<ul class="list bg-base-100 flex flex-col gap-2">
 						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Flows</li>
-						@for(flow of allFlows(); track $index) {
+						@for(flow of testManager.allFlows(); track $index) {
 						<app-flow-list-item (clicked)="selectedFlow = $event" [flow]="flow"></app-flow-list-item>
 
 						}
@@ -96,14 +96,14 @@
 	<div class="hero bg-base-100">
 		<div class="hero-content text-center h-full pt-10">
 			<div class="max-w-lg">
-				@if(allTests().length <= 0) {
+				@if(testManager.allTests().length <= 0) {
 				<h1 class="text-5xl font-bold">Welcome to the Test Builder</h1>
 				<h3 class="text-lg mt-4">You have not created any tests yet.</h3>
 
 				<p class="py-6">Click on the button below to create a new test.</p>
 
 				<button class="btn btn-primary" onclick="create_test_modal.showModal()">Create New Test</button>
-				} @else if(allFlows().length <= 0) {
+				} @else if(testManager.allFlows().length <= 0) {
 				<h3 class="text-3xl mt-4">You have not created any flows yet.</h3>
 
 				<p class="py-6">
@@ -117,8 +117,6 @@
 		</div>
 	</div>
 </ng-template>
-
-
 
 <!-- Open the modal using ID.showModal() method -->
 <dialog id="create_test_modal" class="modal">

@@ -13,5 +13,6 @@ test('test', async ({ page }) => {
   const page2Promise = page1.waitForEvent('popup');
   await page1.getByRole('link', { name: '7766' }).click();
   const page2 = await page2Promise;
+  throw new Error('This is an error');
   await page2.locator('pre > a:nth-child(5)').first().click();
 });

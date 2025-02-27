@@ -1,10 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Test } from '@shared';
+import { FlowTestRunResult, Test } from '@shared';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ApiService } from '../../services/api.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../services/toast.service';
+import { TestManagerService } from '../../services/test-manager.service';
 
 @Component({
 	selector: 'app-test-list-item',
@@ -15,6 +16,8 @@ import { ToastService } from '../../services/toast.service';
 export class TestListItemComponent {
 	@Input() test!: Test;
 	@Input() hideDelete: boolean = false;
+	@Input() status: 'success' | 'failure' | 'warning' | 'pending' = 'pending';
+	@Input() flowTestId: number | null = null;
 
 	@Output() deleteTest: Subject<Test> = new EventEmitter<Test>();
 	@Output() recordTest: Subject<Test> = new EventEmitter<Test>();
@@ -22,7 +25,10 @@ export class TestListItemComponent {
 	@ViewChild('confirmDeleteModal', { static: true }) confirmDeleteModal!: ElementRef<any>;
 	@ViewChild('recordTestModal', { static: true }) recordTestModal!: ElementRef<any>;
 
-	constructor(private apiService: ApiService,private toastService: ToastService) {}
+
+	constructor(private apiService: ApiService, private toastService: ToastService, public testManager: TestManagerService) {}
+
+
 
 	dragEnded(event: any): void {
 		console.log('drag ended', event);
@@ -61,7 +67,5 @@ export class TestListItemComponent {
 			type: 'success',
 			duration: 2000,
 		});
-
-		
 	}
 }

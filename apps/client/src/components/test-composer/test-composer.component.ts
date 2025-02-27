@@ -1,13 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
-import { Flow, Test } from '@shared';
+import { Flow, FlowRunResult, Test } from '@shared';
 import { TestListItemComponent } from '../test-list-item/test-list-item.component';
 import { FlowTest } from 'libs/shared/src/lib/entities/flow-test';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroMinusCircle } from '@ng-icons/heroicons/outline';
-import { ApiService } from '../../services/api.service';
+
+import { TestManagerService } from '../../services/test-manager.service';
 
 @Component({
 	selector: 'app-test-composer',
@@ -22,9 +23,32 @@ import { ApiService } from '../../services/api.service';
 })
 export class TestComposerComponent {
 	@Input() flow!: Flow;
+	@Input() flowRunResult: FlowRunResult | null = null;
 	dragging = false;
 
+	flowRunStatusMap: Record<number,'success' | 'failure' | 'warning' | 'pending'> = {};
 
+	constructor(public testManager: TestManagerService) {}
+
+	ngOnChanges(changes: SimpleChanges): void {
+		if(changes['flowRunResult'])
+		{
+			this.flowRunResult = changes['flowRunResult'].currentValue;
+			this.flowRunResult?.flowTestResults.forEach((flowTestResult) => {
+				if(!flowTestResult.success && !flowTestResult.error)
+				{
+					this.flowRunStatusMap[flowTestResult.flowTestId] = 'pending';
+				}
+				else if(flowTestResult.success)
+				{
+					this.flowRunStatusMap[flowTestResult.flowTestId] = 'success';
+				}else{
+					this.flowRunStatusMap[flowTestResult.flowTestId] = 'failure';
+				}
+
+			});
+		}
+	}
 
 	drop(event: CdkDragDrop<FlowTest[]>): void {
 		console.log(event);
@@ -44,4 +68,5 @@ export class TestComposerComponent {
 		const index = this.flow.flowTests.indexOf(flowTest);
 		this.flow.flowTests.splice(index, 1);
 	}
+
 }
