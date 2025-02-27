@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FlowTest } from 'libs/shared/src/lib/entities/flow-test';
 import { TestManagerService } from '../../services/test-manager.service';
 import { ToastService } from '../../services/toast.service';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
 	selector: 'app-flow-test-list-item',
-	imports: [CommonModule],
+	imports: [CommonModule,DragDropModule],
 	templateUrl: './flow-test-list-item.component.html',
 	styleUrl: './flow-test-list-item.component.css',
 })
