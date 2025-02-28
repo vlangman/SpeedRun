@@ -1,14 +1,16 @@
 <div [class.bg-accent]="dragging" [class.bg-base-300]="!dragging" class="w-full overflow-auto rounded-lg p-4 flex">
 	<ul class="steps steps-vertical overflow-hidden">
 		@for(flowTest of flow.flowTests; track $index) {
-			<li class="step step-primary "
-				[ngClass]="{ 'step-success': flowRunStatusMap[flowTest.id] === 'success', 'step-error': flowRunStatusMap[flowTest.id] === 'failure' }">
-
-			</li>
+		<li
+			class="step step-primary"
+			[ngClass]="{
+				'step-success': flowStatusHistory()[flowTest.id] === 'success',
+				'step-error': flowStatusHistory()[flowTest.id] === 'failure'
+			}"></li>
 		}
-	  </ul>
+	</ul>
 	<ul
-		class="flex flex-col gap-2  min-h-[10vh] w-full"
+		class="flex flex-col gap-2 min-h-[10vh] w-full"
 		cdkDropList
 		id="selectedTestsList"
 		#selectedTestsList="cdkDropList"
@@ -23,10 +25,9 @@
 					(click)="removeTest(flowTest)">
 					<ng-icon name="heroMinusCircle"></ng-icon>
 				</span>
-				<!-- <app-test-list-item class="w-full" [test]="flowTest.test" [hideDelete]="true" [status]="flowRunStatusMap[flowTest.id]" [flowTestId]="flowTest.id"></app-test-list-item> -->
-				 <app-flow-test-list-item [flowTest]="flowTest">
-					
-				 </app-flow-test-list-item>
+				<app-flow-test-list-item
+					[flowTest]="flowTest"
+					[showLinkWarning]="!isPrevFlowLinkValid($index)"></app-flow-test-list-item>
 			</div>
 		</div>
 		} @if(flow.flowTests.length <= 0) {

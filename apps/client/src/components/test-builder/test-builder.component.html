@@ -22,10 +22,7 @@
 
 				<div class="divider divide-neutral-content w-full">Flow builder</div>
 				<!-- {{selectedFlowRunResult | json}} -->
-				<app-test-composer
-					class="w-full flex justify-center"
-					[flow]="selectedFlow"
-					[flowRunResult]="selectedFlowRunResult"></app-test-composer>
+				<app-test-composer class="w-full flex justify-center" [flow]="selectedFlow"></app-test-composer>
 
 				@if(selectedFlow && selectedFlow.flowTests.length) {
 				<div class="flex justify-between p-4 w-full">

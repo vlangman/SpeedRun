@@ -6,8 +6,9 @@ import { environment } from '../environments/environment';
 import { ApiService, APP_CONFIG } from '../services/api.service';
 import { AuthenticationService } from '../services/authentication.service';
 import { LoaderService } from '../services/loader.service';
-import { ToastService } from '../services/toast.service';
+
 import { TestManagerService } from '../services/test-manager.service';
+import { ToastService } from '../services/toast-service';
 
 export const appConfig: ApplicationConfig = {
 	providers: [

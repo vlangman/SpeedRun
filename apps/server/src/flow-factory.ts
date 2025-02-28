@@ -128,7 +128,7 @@ test('${flow.name}', async ({ page }) => {`;
 			if (!flowTestResult)
 				throw new Error(`Flow test result with id ${flowTest.id} not found in flow ${flow.name}`);
 
-			flowTestResult.success = testRan;
+			flowTestResult.success = testRan && !testFailed;
 			flowTestResult.error = testFailed ? stderr : null;
 		}
 

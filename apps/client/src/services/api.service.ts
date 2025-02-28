@@ -4,8 +4,9 @@ import { AuthenticationService } from './authentication.service';
 import { LoaderService } from './loader.service';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
-import { ToastService } from './toast.service';
+
 import { Flow, FlowRunResult, Test } from '@shared';
+import { ToastService } from './toast-service';
 
 export const APP_CONFIG: InjectionToken<any> = new InjectionToken('APP_CONFIG');
 
@@ -38,13 +39,13 @@ export class ApiService extends AbstractHttpService {
 		}).pipe(this.Execute());
 	}
 
-	// Start recording a new test
-	startCodegen(url: string, testName: string): Observable<{ testFile: string }> {
-		return this.POST<{ testFile: string }>({
-			endpoint: '/tests/start-codegen',
-			body: { url, testName },
-		}).pipe(this.Execute());
-	}
+	// Start recording
+	// startCodegen(url: string, testName: string): Observable<{ testFile: string }> {
+	// 	return this.POST<{ testFile: string }>({
+	// 		endpoint: '/tests/start-codegen',
+	// 		body: { url, testName },
+	// 	}).pipe(this.Execute());
+	// }
 
 	// Add a new test
 	addTest(name: string, description: string, url: string): Observable<Test> {
@@ -166,8 +167,7 @@ export class ApiService extends AbstractHttpService {
 								message: error.message,
 								type: 'error',
 								dismissible: true,
-								duration: 5000,
-								icon: 'icons/close-circle.svg',
+								duration: 5000
 							});
 							throwError(() => error);
 						});
@@ -199,8 +199,7 @@ export class ApiService extends AbstractHttpService {
 								message: message,
 								type: 'error',
 								dismissible: true,
-								duration: 5000,
-								icon: 'icons/close-circle.svg',
+								duration: 5000
 							});
 						}
 					} else if (error instanceof Error && !options?.hideErrorToast) {
@@ -209,7 +208,6 @@ export class ApiService extends AbstractHttpService {
 							type: 'error',
 							dismissible: true,
 							duration: 5000,
-							icon: 'icons/close-circle.svg',
 						});
 					}
 					return throwError(() => error);
@@ -225,7 +223,6 @@ export class ApiService extends AbstractHttpService {
 									type: 'error',
 									dismissible: true,
 									duration: 5000,
-									icon: 'icons/close-circle.svg',
 								});
 							}
 						});

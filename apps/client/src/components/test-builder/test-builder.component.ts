@@ -1,8 +1,8 @@
-import { Component, computed, signal, WritableSignal } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
-import { catchError, of, Subject, takeUntil } from 'rxjs';
-import { Flow, FlowRunResult, FlowTestRunResult, Test } from '@shared';
+import { catchError, of } from 'rxjs';
+import { Flow, FlowRunResult, Test } from '@shared';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TestComposerComponent } from '../test-composer/test-composer.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -10,20 +10,20 @@ import { TestListItemComponent } from '../test-list-item/test-list-item.componen
 import { FlowTest } from 'libs/shared/src/lib/entities/flow-test';
 import { FlowListItemComponent } from '../flow-list-item/flow-list-item.component';
 import { TestManagerService } from '../../services/test-manager.service';
-import { TestCodeEditorComponent } from "../test-code-editor/test-code-editor.component";
+import { TestCodeEditorComponent } from '../test-code-editor/test-code-editor.component';
 
 @Component({
 	selector: 'app-test-builder',
 	imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TestComposerComponent,
-    DragDropModule,
-    TestListItemComponent,
-    FlowListItemComponent,
-    TestCodeEditorComponent
-],
+		CommonModule,
+		FormsModule,
+		ReactiveFormsModule,
+		TestComposerComponent,
+		DragDropModule,
+		TestListItemComponent,
+		FlowListItemComponent,
+		TestCodeEditorComponent,
+	],
 	templateUrl: './test-builder.component.html',
 	styleUrls: ['./test-builder.component.css'],
 })
@@ -86,31 +86,13 @@ export class TestBuilderComponent {
 	}
 
 	runFlow() {
-		console.log(this.selectedFlow)
-		this.apiService
-			.testFlow(this.selectedFlow!)
-			.pipe(
-				catchError((error) => {
-					console.error('Failed to run flow', error);
-					return of(null);
-				})
-			)
-			.subscribe((response) => {
-				console.log(response);
-				if (response) {
-					this.testManager.flowTestRunHistory.update((history) => {
-						for (const result of response.flowTestResults) {
-							if(!history[result.flowId]) {
-								history[result.flowId] = {};
-							}
-
-							history[result.flowId][result.testId] = result;
-						}
-						return history;
-					});
-					this.selectedFlowRunResult = response;
-				}
-			});
+		console.log(this.selectedFlow);
+		this.testManager.testFlow(this.selectedFlow!).subscribe((response) => {
+			console.log(response);
+			if (response) {
+				this.selectedFlowRunResult = response;
+			}
+		});
 	}
 
 	selectFlow(flow: Flow) {
@@ -152,4 +134,6 @@ export class TestBuilderComponent {
 				console.log(response);
 			});
 	}
+
+
 }

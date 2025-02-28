@@ -26,7 +26,6 @@ export class TestController {
 
 		//start the codegen for the test using the url
 		exec(launchCommand, async (error, stdout, stderr) => {
-			// ✅ Extract last URL from stdout
 			test.endUrl = (await TestController.extractLastNavigationUrl(stderr)) ?? '';
 
 			const response: APIResponse<Test | null> = {

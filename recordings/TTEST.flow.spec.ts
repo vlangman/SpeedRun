@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect, Browser, BrowserContext, Page } = require('@playwright/test');
 test.use({
 	ignoreHTTPSErrors: true
 });

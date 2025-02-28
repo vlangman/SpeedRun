@@ -4,8 +4,9 @@ import { FlowTestRunResult, Test } from '@shared';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ApiService } from '../../services/api.service';
 import { Subject } from 'rxjs';
-import { ToastService } from '../../services/toast.service';
+
 import { TestManagerService } from '../../services/test-manager.service';
+import { ToastService } from '../../services/toast-service';
 
 @Component({
 	selector: 'app-test-list-item',
