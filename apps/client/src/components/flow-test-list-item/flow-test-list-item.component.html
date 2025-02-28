@@ -1,49 +1,40 @@
 <li
-	class="cursor-move bg-slate-800 rounded-lg"
+	class="cursor-move bg-slate-800 rounded-lg w-full"
 	cdkDrag
 	(cdkDragEnded)="dragEnded($event)"
 	(click)="clicked.emit(flowTest)">
 	@let testHistory = testManager.flowTestRunHistory()[flowTest.flow.id][flowTest.test.id];
-
+	
 	<div
-		class="flex flex-col items-start justify-center p-2 px-4 rounded-lg"
+		class="flex flex-col items-start justify-center p-2 px-4 rounded-lg w-full"
 		[ngClass]="{
 			'bg-success-content': testHistory.success,
 			'bg-error-content': testHistory.error,
 			'bg-warning-content': showLinkWarning
 		}">
 		<span class="flex justify-between w-full pt-1.5">
-			<p class="pb-2">{{ flowTest.test.name }}</p>
+			<p [class.text-warning]="showLinkWarning" [class.text-xl]="showLinkWarning" class="pb-2">
+				{{ flowTest.test.name }}
+			</p>
 
-			<div class="flex space-x-2">
-				<!-- <button
-					class="btn btn-xs btn-square btn-accent hover:scale-110 hover:text-white"
-					(click)="playTest(test)">
-					<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-						<g
-							stroke-linejoin="round"
-							stroke-linecap="round"
-							stroke-width="2"
-							fill="none"
-							stroke="currentColor">
-							<path d="M6 3L20 12 6 21 6 3z"></path>
-						</g>
-					</svg>
-				</button>
-				<button
-					class="btn btn-xs btn-square btn-error hover:scale-110 hover:text-white"
-					(click)="showRecordTestModal()">
-					<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-						<g
-							stroke-linejoin="round"
-							stroke-linecap="round"
-							stroke-width="2"
-							fill="none"
-							stroke="currentColor">
-							<circle cx="12" cy="12" r="10"></circle>
-						</g>
-					</svg>
-				</button> -->
+			<div class="flex flex-col space-y-2">
+				<label class="cursor-pointer label flex justify-between space-x-2">
+					<small class="label-text">Force Go to</small>
+					<input
+						type="checkbox"
+						checked="checked"
+						class="checkbox checkbox-accent checkbox-sm"
+						[(ngModel)]="flowTest.forceGoto" />
+				</label>
+
+				<label class="cursor-pointer label flex justify-between space-x-2">
+					<small class="label-text">Open New Window</small>
+					<input
+						type="checkbox"
+						checked="checked"
+						class="checkbox checkbox-accent checkbox-sm"
+						[(ngModel)]="flowTest.openInNewWindow" />
+				</label>
 			</div>
 		</span>
 		<small class="text-xs font-thin text-gray-300 pb-1">
@@ -65,6 +56,7 @@
 				[class.text-warning]="showLinkWarning"
 				class="hover:bg-base-300 hover:text-white hover:scale-110 cursor-pointer p-1 w-fit rounded-md"
 				(click)="copyText(flowTest.test.startUrl)">
+				<ng-icon name="heroClipboard"></ng-icon>
 				Start:
 				<small>
 					{{ flowTest.test.startUrl }}
@@ -73,6 +65,7 @@
 			<div
 				class="hover:bg-base-300 hover:text-white hover:scale-110 cursor-pointer p-1 w-fit rounded-md"
 				(click)="copyText(flowTest.test.endUrl)">
+				<ng-icon name="heroClipboard"></ng-icon>
 				End:
 				<small>
 					{{ flowTest.test.endUrl }}

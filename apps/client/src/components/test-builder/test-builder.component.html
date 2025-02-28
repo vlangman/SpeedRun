@@ -85,7 +85,7 @@
 					<ul class="list bg-base-100 flex flex-col gap-2">
 						<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Flows</li>
 						@for(flow of testManager.allFlows(); track $index) {
-						<app-flow-list-item (clicked)="selectFlow($event)" [flow]="flow"></app-flow-list-item>
+						<app-flow-list-item  (clicked)="selectFlow($event)" [flow]="flow"></app-flow-list-item>
 
 						}
 					</ul>
