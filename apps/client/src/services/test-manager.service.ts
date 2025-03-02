@@ -73,7 +73,6 @@ export class TestManagerService {
 			tap((response) => {
 				if (response) {
 					this.runHistory.set([...response.flowTestResults]);
-					console.log('CLEARING HISTORY');
 				}
 			})
 		);
@@ -87,9 +86,12 @@ export class TestManagerService {
 			}),
 			tap((response) => {
 				if (response) {
-					console.log(response);
-					// 					this.runHistory.set([...response.flowTestResults]);
-					// 					console.log('CLEARING HISTORY');
+					const allRunResults = []
+					for (const runResult of response) {
+						allRunResults.push(...runResult.flowTestResults);
+					}
+					this.runHistory.set(allRunResults);
+
 				}
 			})
 		);

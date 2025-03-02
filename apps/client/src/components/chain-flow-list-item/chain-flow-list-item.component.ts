@@ -20,11 +20,14 @@ export class ChainFlowListItemComponent {
 	// @Output() recordTest: Subject<Test> = new EventEmitter<Test>();
 	@Output() clicked = new EventEmitter<ChainFlow>();
 
+
 	chainFlowTestHistory = computed(() => {
 		let succeeded = 0;
 		let error = null;
 		let success = false;
+		let pending = true;
 
+		let index = 1;
 		for (const flowTest of this.chainFlow.flow.flowTests) {
 			const flowRunHistory = this.testManager.flowTestRunHistory()[this.chainFlow.flow.id];
 			const testHistory = flowRunHistory[flowTest.test.id];
@@ -34,9 +37,11 @@ export class ChainFlowListItemComponent {
 			}
 
 			if (testHistory && !testHistory.success && testHistory.error) {
-				error = testHistory.error;
+				const failedOn = `FAILED ON TEST INDEX: ${index}`;
+				error = testHistory.error + '\n' + failedOn;
 				break;
 			}
+			index++;
 		}
 
 		if (succeeded === this.chainFlow.flow.flowTests.length) {
@@ -46,6 +51,7 @@ export class ChainFlowListItemComponent {
 		return {
 			success,
 			error,
+			pending
 		};
 	});
 

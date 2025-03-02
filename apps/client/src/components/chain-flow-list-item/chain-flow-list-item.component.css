@@ -1,0 +1,14 @@
+.success{
+    color: white !important;
+    background-color: var(--color-success-content);
+}
+
+.error{
+    color: white !important;
+    background-color: var(--color-error-content);
+}
+
+.warning{
+    color: white !important;
+    background-color: var(--color-warning-content);
+}

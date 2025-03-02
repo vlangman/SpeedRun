@@ -1,9 +1,9 @@
-const { test, expect, Browser, BrowserContext, Page } = require('@playwright/test');
+const { test, expect } = require('@playwright/test');
 test.use({
 	ignoreHTTPSErrors: true
 });
 
-test('TTEST', async ({ page }) => {
+test('TTEST', async ({ page , browser }) => {
 try {
 	
 	console.log('EXECUTING_FLOW_TEST_ID:3');
@@ -16,6 +16,7 @@ try {
   await page.getByRole('button', { name: 'LOGIN' }).click();
   await expect(page.locator('.layout-content')).toBeVisible();
 
+
 	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:3');
 
 } catch (error) {
@@ -24,12 +25,11 @@ try {
 	throw error;
 }
 
-
 try {
 	
 	console.log('EXECUTING_FLOW_TEST_ID:4');
 
-	  await page.getByRole('link', { name: 'Toggle Menu' }).click();
+	await page.waitForURL('https://localhost:8080/pages/admin/dashboard.gic');  await page.getByRole('link', { name: 'Toggle Menu' }).click();
   await page.getByRole('link', { name: '🏢 Projects ' }).click();
   await page.getByRole('link', { name: ' Register' }).click();
   await expect(page.getByText('ProjectsSortGIC Ref Number')).toBeVisible();
@@ -111,6 +111,7 @@ try {
   await page.getByRole('button', { name: '💾 Submit' }).click();
   await expect(page.getByRole('button', { name: 'AutomatedTesting (Civils)  ' })).toBeVisible();
 
+
 	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:4');
 
 } catch (error) {
@@ -119,18 +120,18 @@ try {
 	throw error;
 }
 
-
 try {
 	
 	console.log('EXECUTING_FLOW_TEST_ID:9');
 
-	  // await page.getByRole('row', { name: /Expand Eastern Cape \(\d+\)/ }).getByLabel('Expand').click();
+	await page.waitForURL('https://localhost:8080/pages/appointment-process/contract.gic');  // await page.getByRole('row', { name: /Expand Eastern Cape \(\d+\)/ }).getByLabel('Expand').click();
   // await page.getByRole('row', { name: '240502CS Boxwood - Orange' }).getByRole('link').click();
   // await page.getByRole('list').filter({ hasText: 'ActionsView Projects' }).locator('a').click();
   await page.getByLabel('AutomatedTesting (Civils)').getByRole('link', { name: '' }).click();
   await page.getByRole('menuitem', { name: 'Delete Project' }).nth(1).click();
   await page.getByRole('button', { name: 'Yes' }).click();
   await expect(page.getByText('WarningProject Deleted')).toBeVisible();
+
 
 	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:9');
 
@@ -139,5 +140,4 @@ try {
 	console.error(error.error?.message || error.message);
 	throw error;
 }
-
 });
