@@ -1,7 +1,7 @@
 import { computed, effect, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { Flow, FlowRunResult, FlowTestRunResult, Test } from '@shared';
 import { ApiService } from './api.service';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, forkJoin, of, switchMap, tap } from 'rxjs';
 
 export interface TestRunHistory {
 	test: Test;
@@ -11,8 +11,9 @@ export interface TestRunHistory {
 @Injectable()
 export class TestManagerService {
 	selectedTest: Test | null = null;
+
 	//FlowID TO TestID to FlowRunResult
-	flowTestRunHistory: Signal<Record<number,Record<number, FlowTestRunResult>>> = computed(()=>{
+	flowTestRunHistory: Signal<Record<number, Record<number, FlowTestRunResult>>> = computed(() => {
 		const allFlows = this.allFlows();
 		const allTests = this.allTests();
 		const recentRuns = this.runHistory();
@@ -35,30 +36,32 @@ export class TestManagerService {
 		recentRuns.forEach((run) => {
 			flowToTestMap[run.flowId][run.testId] = run;
 		});
-		console.log("FLOW TO TEST MAP", flowToTestMap);
+		console.log('FLOW TO TEST MAP', flowToTestMap);
 		return flowToTestMap;
-	})
+	});
 
 	private runHistory: WritableSignal<FlowTestRunResult[]> = signal([]);
 	allTests: WritableSignal<Test[]> = signal([]);
 	allFlows: WritableSignal<Flow[]> = signal([]);
 
-
-	
 	constructor(private apiService: ApiService) {
 		(window as any).testManager = this;
 		this.loadData();
-
 	}
 
 	loadData() {
-		this.apiService.getAllTests().subscribe((tests) => {
-			this.allTests.set(tests);
-		});
-
-		this.apiService.getAllFlows().subscribe((flows) => {
-			this.allFlows.set(flows);
-		});
+		this.apiService
+			.getAllTests()
+			.pipe(
+				switchMap((tests) => {
+					return forkJoin([of(tests), this.apiService.getAllFlows()]);
+				})
+			)
+			.subscribe((testAndFlows) => {
+				const [tests, flows] = testAndFlows;
+				this.allFlows.set(flows);
+				this.allTests.set(tests);
+			});
 	}
 
 	testFlow(flow: Flow) {
@@ -69,14 +72,10 @@ export class TestManagerService {
 			}),
 			tap((response) => {
 				if (response) {
-					this.runHistory.set([...response.flowTestResults])
-					console.log("CLEARING HISTORY");
+					this.runHistory.set([...response.flowTestResults]);
+					console.log('CLEARING HISTORY');
 				}
 			})
-		)
+		);
 	}
-
-	
-
-
 }

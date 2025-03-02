@@ -5,7 +5,8 @@
 			class="step step-primary"
 			[ngClass]="{
 				'step-success': flowStatusHistory()[flowTest.id] === 'success',
-				'step-error': flowStatusHistory()[flowTest.id] === 'failure'
+				'step-error': flowStatusHistory()[flowTest.id] === 'failure',
+				'step-warning': !isPrevFlowLinkValid($index)
 			}"></li>
 		}
 	</ul>

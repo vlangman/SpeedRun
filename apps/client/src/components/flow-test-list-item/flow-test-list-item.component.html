@@ -1,12 +1,13 @@
 <li
-	class="cursor-move bg-slate-800 rounded-lg w-full"
+	class="cursor-move bg-base-200 rounded-lg w-full"
 	cdkDrag
 	(cdkDragEnded)="dragEnded($event)"
 	(click)="clicked.emit(flowTest)">
 	@let testHistory = testManager.flowTestRunHistory()[flowTest.flow.id][flowTest.test.id];
-	
+
 	<div
 		class="flex flex-col items-start justify-center p-2 px-4 rounded-lg w-full"
+		[class.text-white]="showLinkWarning"
 		[ngClass]="{
 			'bg-success-content': testHistory.success,
 			'bg-error-content': testHistory.error,
@@ -37,7 +38,7 @@
 				</label>
 			</div>
 		</span>
-		<small class="text-xs font-thin text-gray-300 pb-1">
+		<small class="text-xs font-thin text-pretty text-inherit pb-1">
 			{{ flowTest.test.description }}
 		</small>
 
@@ -45,11 +46,12 @@
 
 		<span class="w-full text-md whitespace-break-spaces text-warning">
 			<div class="font-bold">*Warning</div>
-			<small class="text-white italic font-thin">
+			<small class="text-warning italic font-thin">
 				<strong>Start URL does not match previous test end URL</strong>
 				, this may cause your flow to break!
 			</small>
 		</span>
+
 		}
 		<div class="flex flex-col w-full text-xs">
 			<div
@@ -76,8 +78,8 @@
 		@if(testHistory.error) {
 		<div class="mockup-code w-full">
 			<pre class="max-w-full overflow-x-auto whitespace-pre-wrap h-fit">
-				<code class="pl-8">{{ testHistory.error }}</code>
-			</pre>
+					<code class="pl-8">{{ testHistory.error }}</code>
+				</pre>
 		</div>
 		}
 	</div>

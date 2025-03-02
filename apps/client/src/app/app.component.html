@@ -1,37 +1,20 @@
-<div class="drawer">
-	<input id="my-drawer" type="checkbox" class="drawer-toggle" />
-	<div class="drawer-content relative">
-		<!-- Navbar -->
-		<app-navbar></app-navbar>
-		<router-outlet></router-outlet>
+<app-navbar></app-navbar>
+<router-outlet></router-outlet>
 
-		<div class="top-2 right-2 absolute z-50 flex gap-1 flex-col max-h-screen overflow-hidden">
-			@for (snack of toastService.toasts(); track idx; let idx = $index) {
-			<div
-				class="alert p-2 flex gap-2 justify-between text-white rounded-md max-w-[300px]"
-				[ngClass]="{
+<div class="top-2 right-2 absolute z-50 flex gap-1 flex-col max-h-screen overflow-hidden">
+	@for (snack of toastService.toasts(); track idx; let idx = $index) {
+	<div
+		class="alert p-2 flex gap-2 justify-between text-white rounded-md max-w-[300px]"
+		[ngClass]="{
 					'alert-error': snack.type === 'error',
 					'alert-success': snack.type === 'success',
 					'alert-info': snack.type === 'info',
 				}">
-				<span>{{ snack.message }}</span>
+		<span>{{ snack.message }}</span>
 
-				@if (snack.dismissible) {
-				<ng-icon
-					name="matClose"
-					class="cursor-pointer hover:text-white"
-					(click)="toastService.hide(snack)"></ng-icon>
-				}
-			</div>
-			}
-		</div>
+		@if (snack.dismissible) {
+		<ng-icon name="matClose" class="cursor-pointer hover:text-white" (click)="toastService.hide(snack)"></ng-icon>
+		}
 	</div>
-	<div class="drawer-side">
-		<label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-		<ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-			<!-- Sidebar content here -->
-			<li><a>Sidebar Item 1</a></li>
-			<li><a>Sidebar Item 2</a></li>
-		</ul>
-	</div>
+	}
 </div>

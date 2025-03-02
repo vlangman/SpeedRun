@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, effect, ElementRef, signal, ViewChild, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { catchError, of } from 'rxjs';
@@ -11,6 +11,8 @@ import { FlowTest } from 'libs/shared/src/lib/entities/flow-test';
 import { FlowListItemComponent } from '../flow-list-item/flow-list-item.component';
 import { TestManagerService } from '../../services/test-manager.service';
 import { TestCodeEditorComponent } from '../test-code-editor/test-code-editor.component';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroPlay, heroPlayCircle } from '@ng-icons/heroicons/outline';
 
 @Component({
 	selector: 'app-test-builder',
@@ -23,6 +25,12 @@ import { TestCodeEditorComponent } from '../test-code-editor/test-code-editor.co
 		TestListItemComponent,
 		FlowListItemComponent,
 		TestCodeEditorComponent,
+		NgIcon,
+	],
+	providers: [
+		provideIcons({
+			heroPlayCircle,
+		}),
 	],
 	templateUrl: './test-builder.component.html',
 	styleUrls: ['./test-builder.component.css'],
@@ -44,6 +52,7 @@ export class TestBuilderComponent {
 		});
 	});
 	selectedFlow: Flow | null = null;
+	originalFlowTests: FlowTest[] = [];
 	selectedTest: Test | null = null;
 	selectedFlowRunResult: FlowRunResult | null = null;
 
@@ -58,9 +67,20 @@ export class TestBuilderComponent {
 		description: new FormControl('', Validators.required),
 	});
 
+	@ViewChild('confirmCancelModal', { static: true }) confirmCancelModal!: ElementRef<any>;
+
 	constructor(private apiService: ApiService, public testManager: TestManagerService) {
 		this.newTestForm.markAsPristine();
 		this.newTestForm.markAsUntouched();
+
+		effect(() => {
+			const allFlows = this.testManager.allFlows();
+			if (!this.selectedFlow && allFlows.length) {
+				//choose the first
+				this.selectedFlow = allFlows[0];
+				this.originalFlowTests = [...allFlows[0].flowTests];
+			}
+		});
 	}
 
 	createNewTest() {
@@ -96,13 +116,16 @@ export class TestBuilderComponent {
 	}
 
 	selectFlow(flow: Flow) {
+		console.log(flow);
 		this.selectedTest = null;
 		this.selectedFlow = flow;
+		this.originalFlowTests = [...flow.flowTests];
 		this.selectedFlowRunResult = null;
 	}
 
 	selectTest(test: Test) {
 		this.selectedFlow = null;
+		this.originalFlowTests = [];
 		this.selectedTest = test;
 	}
 
@@ -135,5 +158,13 @@ export class TestBuilderComponent {
 			});
 	}
 
+	cancelFlowChanges() {
+		console.log('Cancelling changes');
+		console.log(this.selectedFlow);
+		console.log(this.originalFlowTests);
 
+		this.selectedFlow!.flowTests = [...this.originalFlowTests];
+
+		this.confirmCancelModal.nativeElement.close();
+	}
 }

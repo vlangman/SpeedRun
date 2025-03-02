@@ -48,12 +48,17 @@ export class TestComposerComponent {
 	drop(event: CdkDragDrop<FlowTest[]>): void {
 		console.log(event);
 
+		
 		if (event.previousContainer === event.container) {
 			//update the order of the flowTest
 			moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 		} else {
 			copyArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
 		}
+		//add the flow to the data of the flowTest
+		const flowWithNoFlowTests = { ...this.flow };
+		flowWithNoFlowTests.flowTests = [];
+		event.container.data[event.currentIndex].flow = flowWithNoFlowTests;
 		event.container.data.forEach((flowTest, index) => {
 			flowTest.order = index;
 		});
@@ -69,7 +74,9 @@ export class TestComposerComponent {
 		if (index == 0) return true;
 		if (!this.flow) return true;
 
-		if (this.flow.flowTests[index].test.startUrl != this.flow.flowTests[index - 1].test.endUrl)
+		const flowTest = this.flow.flowTests[index];
+
+		if (!flowTest.forceGoto && flowTest.test.startUrl != this.flow.flowTests[index - 1].test.endUrl)
 			return false;
 
 		return true;
