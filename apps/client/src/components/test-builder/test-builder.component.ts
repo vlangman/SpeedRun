@@ -50,6 +50,7 @@ export class TestBuilderComponent {
 				test,
 				order: 0,
 				forceGoto: false,
+				openInNewContext: false,
 			};
 			return flowTest;
 		});

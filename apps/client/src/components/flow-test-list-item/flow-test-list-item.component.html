@@ -9,9 +9,9 @@
 		class="flex flex-col items-start justify-center p-2 px-4 rounded-lg w-full"
 		[class.text-white]="showLinkWarning"
 		[ngClass]="{
-			'bg-success-content': testHistory.success,
-			'bg-error-content': testHistory.error,
-			'bg-warning-content': showLinkWarning
+			'bg-success-content text-white': testHistory.success,
+			'bg-error-content text-white': testHistory.error,
+			'bg-warning-content text-white': showLinkWarning
 		}">
 		<span class="flex justify-between w-full pt-1.5">
 			<p [class.text-warning]="showLinkWarning" [class.text-xl]="showLinkWarning" class="pb-2">
@@ -26,6 +26,15 @@
 						checked="checked"
 						class="checkbox checkbox-accent checkbox-sm"
 						[(ngModel)]="flowTest.forceGoto" />
+				</label>
+
+				<label class="cursor-pointer label flex justify-between space-x-2">
+					<small class="label-text">Use New Window</small>
+					<input
+						type="checkbox"
+						checked="checked"
+						class="checkbox checkbox-accent checkbox-sm"
+						[(ngModel)]="flowTest.openInNewContext" />
 				</label>
 			</div>
 		</span>

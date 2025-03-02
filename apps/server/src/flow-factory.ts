@@ -68,7 +68,7 @@ test('${flow.name}', async ({ page , browser }) => {`;
 			//ensure this only happens in the first line never the first inde
 
 			let finalCode = '';
-			if (flowTestIndex > 0 && !flowTest.forceGoto ) {
+			if (flowTestIndex > 0 && !flowTest.forceGoto && !flowTest.openInNewContext) {
 				const pageGotoIndex = slicedCode.indexOf('page.goto');
 				const isFirstLineEnd = slicedCode.indexOf('\n');
 
@@ -83,6 +83,15 @@ test('${flow.name}', async ({ page , browser }) => {`;
 				}
 			} else {
 				finalCode = slicedCode + '\n';
+			}
+
+			if (flowTest.openInNewContext) {
+				const pageUUID = uuidv4().replace(/-/g, '').slice(0, 10);
+				finalCode =
+				`
+					const context = await browser.newContext();
+					const page_${pageUUID} = await context.newPage();
+				` + finalCode.replace(/page\./g, `page_${pageUUID}.`);
 			}
 
 			// if (flowTest.openInNewWindow) {

@@ -16,8 +16,10 @@ export class FlowTest {
 	@Column()
 	order: number;
 
-
 	@Column()
 	forceGoto: boolean;
+
+	@Column({default: false})
+	openInNewContext: boolean;
 
 }

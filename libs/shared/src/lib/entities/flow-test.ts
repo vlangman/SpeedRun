@@ -8,4 +8,5 @@ export interface FlowTest {
 	order: number;
 	
 	forceGoto: boolean;
+	openInNewContext: boolean;
 }

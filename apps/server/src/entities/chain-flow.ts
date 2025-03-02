@@ -15,4 +15,6 @@ export class ChainFlow {
 
     @Column()
     order: number;
+
+    
 }
