@@ -11,14 +11,14 @@ export class FlowFactory {
 			return `
 try {
 	
-	console.log('EXECUTING_FLOW_TEST_ID:${flowtest.id}');
+	console.log('EXECUTING_FLOW_TEST_ID:${flowtest.flow.id}:${flowtest.test.id}');
 
 	${testCode}
 
-	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:${flowtest.id}');
+	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:${flowtest.flow.id}:${flowtest.test.id}');
 
 } catch (error) {
-	console.log('FAILED_FLOW_TEST_EXECUTION:${flowtest.id}');
+	console.log('FAILED_FLOW_TEST_EXECUTION:${flowtest.flow.id}:${flowtest.test.id}');
 	console.error(error.error?.message || error.message);
 	throw error;
 }
@@ -47,19 +47,6 @@ test('${flow.name}', async ({ page , browser }) => {`;
 		let flowTestIndex = 0;
 		for (const flowTest of flow.flowTests) {
 			const testCode = testCodeMap.get(flowTest.test.id)!;
-			// const pageReferences = testCode.match(/page\d+/g) || [];
-
-			// let updatedTestCode = testCode;
-			// const uniquePageRefs = new Map<string, string>();
-			// for (const pageRef of pageReferences) {
-			// 	if (!uniquePageRefs.has(pageRef)) {
-			// 		const uniquePageRef = `page_${uuidv4().replace(/-/g, '').slice(0, 10)}`;
-			// 		uniquePageRefs.set(pageRef, uniquePageRef);
-			// 	}
-			// 	const regex = new RegExp(pageRef, 'g');
-			// 	updatedTestCode = updatedTestCode.replace(regex, uniquePageRefs.get(pageRef)!);
-			// }
-
 			const startIndex = testCode.indexOf('=> {') + 4;
 			const endIndex = testCode.lastIndexOf('}') - 1;
 			let slicedCode = testCode.slice(startIndex, endIndex).trim();
@@ -94,17 +81,6 @@ test('${flow.name}', async ({ page , browser }) => {`;
 				` + finalCode.replace(/page\./g, `page_${pageUUID}.`);
 			}
 
-			// if (flowTest.openInNewWindow) {
-			// 	finalCode =
-			// 		`
-			// 			const context = await browser.newContext();
-			// 			page = await context.newPage();
-			// 		` + finalCode;
-
-			// 	// replace the all 'page' references with the new page name in the test code
-			// 	// finalCode = finalCode.replace(/page\./g, p + '.');
-			// }
-
 			compiledCode += wrapTestCodeInTryCatch(flowTest, finalCode);
 
 			flowTestIndex++;
@@ -116,7 +92,7 @@ test('${flow.name}', async ({ page , browser }) => {`;
 
 	static buildFlowRunResult(stdout: string, stderr: string, flow: Flow): FlowRunResult {
 		// extract the results of the test from stdOut
-		const executeRegex = /EXECUTING_FLOW_TEST_ID:(\d+)/g;
+		const executeRegex = /EXECUTING_FLOW_TEST_ID:(\d+):(\d+)/g;
 		const results: FlowRunResult = {
 			success: true,
 			flowTestResults: [],
@@ -136,23 +112,24 @@ test('${flow.name}', async ({ page , browser }) => {`;
 
 		let match;
 		while ((match = executeRegex.exec(stdout)) !== null) {
-			const flowTestId = parseInt(match[1]);
-			const flowTest = flow.flowTests.find((t) => t.id === flowTestId);
+			const flowId = parseInt(match[1]);
+			const testId = parseInt(match[2]);
+			const flowTest = flow.flowTests.find((t) => t.flow.id === flowId && t.test.id === testId);
 
-			if (!flowTest) throw new Error(`Flow test with id ${flowTestId} not found in flow ${flow.name}`);
+			if (!flowTest) throw new Error(`Flow test with flowID: ${flowId} testID ${testId} not found in flow ${flow.name}`);
 			// console.log(match[1]);
 			// console.log(match[2]);
 			// console.log(stdout)
 
 			// console.log(`TEST_ID:${flowTest.test.id}`);
-			const testRan = stdout.includes(`SUCCESSFUL_FLOW_TEST_EXECUTION:${flowTest.id}`);
-			const testFailed = stdout.includes(`FAILED_FLOW_TEST_EXECUTION:${flowTest.id}`);
+			const testRan = stdout.includes(`SUCCESSFUL_FLOW_TEST_EXECUTION:${flowTest.flow.id}:${flowTest.test.id}`);
+			const testFailed = stdout.includes(`FAILED_FLOW_TEST_EXECUTION:${flowTest.flow.id}:${flowTest.test.id}`);
 
 			const flowTestResult = allFlowTests.find(
 				(t) => t.flowId === flowTest.flow.id && t.testId === flowTest.test.id
 			);
 			if (!flowTestResult)
-				throw new Error(`Flow test result with id ${flowTest.id} not found in flow ${flow.name}`);
+				throw new Error(`Flow test result with flowID: ${flowTest.flow.id} testID ${flowTest.test.id} not found`);
 
 			flowTestResult.success = testRan && !testFailed;
 			flowTestResult.error = testFailed ? stderr : null;

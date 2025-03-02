@@ -6,7 +6,7 @@ test.use({
 test('TestFlow1', async ({ page , browser }) => {
 try {
 	
-	console.log('EXECUTING_FLOW_TEST_ID:1');
+	console.log('EXECUTING_FLOW_TEST_ID:2:8');
 
 	await page.goto('http://www.example.com/');
   await page.getByRole('link', { name: 'More information...' }).click();
@@ -15,24 +15,20 @@ try {
   await expect(page.getByText('Network Working Group D.')).toBeVisible();
 
 
-	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:1');
+	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:2:8');
 
 } catch (error) {
-	console.log('FAILED_FLOW_TEST_EXECUTION:1');
+	console.log('FAILED_FLOW_TEST_EXECUTION:2:8');
 	console.error(error.error?.message || error.message);
 	throw error;
 }
 
 try {
 	
-	console.log('EXECUTING_FLOW_TEST_ID:2');
+	console.log('EXECUTING_FLOW_TEST_ID:2:9');
 
-	
-					const context = await browser.newContext();
-					const page_3ff50415e3 = await context.newPage();
-				await page_3ff50415e3.goto('https://www.rfc-editor.org/rfc/rfc2606');
-  const page1Promise = page_3ff50415e3.waitForEvent('popup');
-  await page_3ff50415e3.getByRole('link', { name: '6761' }).click();
+	await page.waitForURL('https://www.rfc-editor.org/rfc/rfc2606');  const page1Promise = page.waitForEvent('popup');
+  await page.getByRole('link', { name: '6761' }).click();
   const page1 = await page1Promise;
   await page1.getByRole('link', { name: '2606', exact: true }).click();
   await page1.getByRole('link', { name: '1', exact: true }).first().click();
@@ -46,10 +42,29 @@ try {
   await page2.locator('pre > a:nth-child(5)').first().click();
 
 
-	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:2');
+	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:2:9');
 
 } catch (error) {
-	console.log('FAILED_FLOW_TEST_EXECUTION:2');
+	console.log('FAILED_FLOW_TEST_EXECUTION:2:9');
+	console.error(error.error?.message || error.message);
+	throw error;
+}
+
+try {
+	
+	console.log('EXECUTING_FLOW_TEST_ID:2:14');
+
+	await page.waitForURL('http://www.example.com/');  await page.getByRole('link', { name: 'More information...' }).click();
+  await page.getByRole('link', { name: 'RFC 2606' }).click();
+  await page.getByRole('link', { name: 'HTML' }).click();
+  await page.getByRole('link', { name: 'HTML' }).click();
+  await page.getByRole('link', { name: 'PDF' }).click();
+
+
+	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:2:14');
+
+} catch (error) {
+	console.log('FAILED_FLOW_TEST_EXECUTION:2:14');
 	console.error(error.error?.message || error.message);
 	throw error;
 }
