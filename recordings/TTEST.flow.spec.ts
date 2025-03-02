@@ -6,7 +6,7 @@ test.use({
 test('TTEST', async ({ page , browser }) => {
 try {
 	
-	console.log('EXECUTING_FLOW_TEST_ID:3');
+	console.log('EXECUTING_FLOW_TEST_ID:3:11');
 
 	await page.goto('https://localhost:8080/login.gic');
   await page.getByRole('textbox', { name: 'Email' }).click();
@@ -17,17 +17,17 @@ try {
   await expect(page.locator('.layout-content')).toBeVisible();
 
 
-	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:3');
+	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:3:11');
 
 } catch (error) {
-	console.log('FAILED_FLOW_TEST_EXECUTION:3');
+	console.log('FAILED_FLOW_TEST_EXECUTION:3:11');
 	console.error(error.error?.message || error.message);
 	throw error;
 }
 
 try {
 	
-	console.log('EXECUTING_FLOW_TEST_ID:4');
+	console.log('EXECUTING_FLOW_TEST_ID:3:12');
 
 	await page.waitForURL('https://localhost:8080/pages/admin/dashboard.gic');  await page.getByRole('link', { name: 'Toggle Menu' }).click();
   await page.getByRole('link', { name: '🏢 Projects ' }).click();
@@ -112,17 +112,17 @@ try {
   await expect(page.getByRole('button', { name: 'AutomatedTesting (Civils)  ' })).toBeVisible();
 
 
-	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:4');
+	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:3:12');
 
 } catch (error) {
-	console.log('FAILED_FLOW_TEST_EXECUTION:4');
+	console.log('FAILED_FLOW_TEST_EXECUTION:3:12');
 	console.error(error.error?.message || error.message);
 	throw error;
 }
 
 try {
 	
-	console.log('EXECUTING_FLOW_TEST_ID:9');
+	console.log('EXECUTING_FLOW_TEST_ID:3:13');
 
 	await page.waitForURL('https://localhost:8080/pages/appointment-process/contract.gic');  // await page.getByRole('row', { name: /Expand Eastern Cape \(\d+\)/ }).getByLabel('Expand').click();
   // await page.getByRole('row', { name: '240502CS Boxwood - Orange' }).getByRole('link').click();
@@ -133,10 +133,10 @@ try {
   await expect(page.getByText('WarningProject Deleted')).toBeVisible();
 
 
-	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:9');
+	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:3:13');
 
 } catch (error) {
-	console.log('FAILED_FLOW_TEST_EXECUTION:9');
+	console.log('FAILED_FLOW_TEST_EXECUTION:3:13');
 	console.error(error.error?.message || error.message);
 	throw error;
 }

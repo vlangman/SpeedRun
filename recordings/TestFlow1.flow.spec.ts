@@ -49,23 +49,4 @@ try {
 	console.error(error.error?.message || error.message);
 	throw error;
 }
-
-try {
-	
-	console.log('EXECUTING_FLOW_TEST_ID:2:14');
-
-	await page.waitForURL('http://www.example.com/');  await page.getByRole('link', { name: 'More information...' }).click();
-  await page.getByRole('link', { name: 'RFC 2606' }).click();
-  await page.getByRole('link', { name: 'HTML' }).click();
-  await page.getByRole('link', { name: 'HTML' }).click();
-  await page.getByRole('link', { name: 'PDF' }).click();
-
-
-	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:2:14');
-
-} catch (error) {
-	console.log('FAILED_FLOW_TEST_EXECUTION:2:14');
-	console.error(error.error?.message || error.message);
-	throw error;
-}
 });

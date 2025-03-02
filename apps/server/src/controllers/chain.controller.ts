@@ -71,7 +71,7 @@ export class ChainController {
 		try {
 			const chainRepository = AppDataSource.getRepository(Chain);
 			const chains = await chainRepository.find({
-				relations: ['chainFlows', 'chainFlows.flow'],
+				relations: ['chainFlows', 'chainFlows.flow', 'chainFlows.flow.flowTests', 'chainFlows.flow.flowTests.test', 'chainFlows.flow.flowTests.flow'],
 				order: {
 					chainFlows: {
 						order: 'ASC',
