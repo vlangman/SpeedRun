@@ -6,7 +6,7 @@
 			[ngClass]="{
 				'step-success': chainStatusHistory()[chainFlow.id] === 'success',
 				'step-error': chainStatusHistory()[chainFlow.id] === 'failure',
-				'step-neutral': chainStatusHistory()[chainFlow.id] === 'pending'
+				'step-primary': chainStatusHistory()[chainFlow.id] === 'pending'
 			}"></li>
 
 		}

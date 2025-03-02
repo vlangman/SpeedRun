@@ -9,9 +9,10 @@
 		class="flex flex-col items-start justify-center p-2 px-4 rounded-lg w-full"
 		[class.text-white]="showLinkWarning"
 		[ngClass]="{
-			'bg-success-content text-white': testHistory.success,
-			'bg-error-content text-white': testHistory.error,
-			'bg-warning-content text-white': showLinkWarning
+			'bg-success-content ': testHistory.success,
+			'bg-error-content ': testHistory.error,
+			'bg-warning-content ': showLinkWarning,
+			'text-white': testHistory.error || testHistory.success || showLinkWarning
 		}">
 		<span class="flex justify-between w-full pt-1.5">
 			<p [class.text-warning]="showLinkWarning" [class.text-xl]="showLinkWarning" class="pb-2">

@@ -29,10 +29,10 @@ try {
 
 	
 					const context = await browser.newContext();
-					const page_d1033f5f28 = await context.newPage();
-				await page_d1033f5f28.goto('https://www.rfc-editor.org/rfc/rfc2606');
-  const page1Promise = page_d1033f5f28.waitForEvent('popup');
-  await page_d1033f5f28.getByRole('link', { name: '6761' }).click();
+					const page_3ff50415e3 = await context.newPage();
+				await page_3ff50415e3.goto('https://www.rfc-editor.org/rfc/rfc2606');
+  const page1Promise = page_3ff50415e3.waitForEvent('popup');
+  await page_3ff50415e3.getByRole('link', { name: '6761' }).click();
   const page1 = await page1Promise;
   await page1.getByRole('link', { name: '2606', exact: true }).click();
   await page1.getByRole('link', { name: '1', exact: true }).first().click();

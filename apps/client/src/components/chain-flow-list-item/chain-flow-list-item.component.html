@@ -11,7 +11,8 @@
 		[ngClass]="{
 			'bg-success-content text-white': chainFlowTestHistory().success,
 			'bg-error-content text-white': chainFlowTestHistory().error,
-			'bg-warning-content text-white': showLinkWarning
+			'bg-warning-content text-white': showLinkWarning,
+			'text-white': chainFlowTestHistory().error || chainFlowTestHistory().success || showLinkWarning
 		}">
 		
 		<span class="flex justify-between w-full pt-1.5">
