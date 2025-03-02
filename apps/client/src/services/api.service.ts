@@ -5,7 +5,7 @@ import { LoaderService } from './loader.service';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 
-import { Flow, FlowRunResult, Test } from '@shared';
+import { Chain, Flow, FlowRunResult, Test } from '@shared';
 import { ToastService } from './toast-service';
 
 export const APP_CONFIG: InjectionToken<any> = new InjectionToken('APP_CONFIG');
@@ -84,6 +84,19 @@ export class ApiService extends AbstractHttpService {
 		}).pipe(this.Execute());
 	}
 
+	getAllChains(): Observable<Chain[]> {
+		return this.GET<Chain[]>({
+			endpoint: '/chain',
+		}).pipe(this.Execute());
+	}
+
+	createChain(name: string, description: string): Observable<Chain> {
+		return this.POST<Chain>({
+			endpoint: '/chain',
+			body: { name, description },
+		}).pipe(this.Execute());
+	}
+
 	// // Execute a flow
 	// executeFlow(id: number): Observable<{ results: any[] }> {
 	// 	return this.POST<{ results: any[] }>({
@@ -120,6 +133,21 @@ export class ApiService extends AbstractHttpService {
 		return this.POST<Test>({
 			endpoint: '/tests/record',
 			body: { id: testId },
+		}).pipe(this.Execute());
+	}
+
+
+	testChain(chain: Chain): Observable<FlowRunResult[]> {
+		return this.POST<FlowRunResult[]>({
+			endpoint: '/chain/test',
+			body: { chain },
+		}).pipe(this.Execute());
+	}
+
+	updateChain(chain: Chain): Observable<Chain> {
+		return this.PUT<Chain>({
+			endpoint: '/chain',
+			body: chain,
 		}).pipe(this.Execute());
 	}
 
@@ -167,7 +195,7 @@ export class ApiService extends AbstractHttpService {
 								message: error.message,
 								type: 'error',
 								dismissible: true,
-								duration: 5000
+								duration: 5000,
 							});
 							throwError(() => error);
 						});
@@ -199,7 +227,7 @@ export class ApiService extends AbstractHttpService {
 								message: message,
 								type: 'error',
 								dismissible: true,
-								duration: 5000
+								duration: 5000,
 							});
 						}
 					} else if (error instanceof Error && !options?.hideErrorToast) {

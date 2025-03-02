@@ -1,4 +1,6 @@
 <div class="flex">
+	@if(!selectedChain) {
+
 	<div class="flex flex-col w-2/3">
 		@if(!testManager.allTests().length || !testManager.allFlows().length) {
 		<ng-container *ngTemplateOutlet="WelcomePage"></ng-container>
@@ -19,14 +21,20 @@
 			</div>
 
 			<div class="divider divide-neutral-content w-full">Flow builder</div>
-			<!-- {{selectedFlowRunResult | json}} -->
+
 			<app-test-composer class="w-full flex justify-center" [flow]="selectedFlow!"></app-test-composer>
 
 			@if(selectedFlow && selectedFlow!.flowTests.length) {
 			<div class="flex justify-between p-4 w-full items-center">
-				<button class="btn btn-primary mt-4 text-black hover:text-white hover:scale-105" (click)="saveFlow()">Save Changes</button>
+				<button class="btn btn-primary mt-4 text-black hover:text-white hover:scale-105" (click)="saveFlow()">
+					Save Changes
+				</button>
 				<div class="flex gap-2">
-					<button class="btn btn-error mt-4 hover:text-white hover:scale-105" onclick="confirm_cancel_modal.showModal()">Cancel</button>
+					<button
+						class="btn btn-error mt-4 hover:text-white hover:scale-105"
+						onclick="confirm_cancel_modal.showModal()">
+						Cancel
+					</button>
 					<button class="btn btn-accent mt-4 hover:text-white hover:scale-105" (click)="runFlow()">
 						<ng-icon name="heroPlayCircle" size="1.25rem"></ng-icon>
 						Test Flow
@@ -36,13 +44,44 @@
 			} }
 		</div>
 	</div>
+	}@else {
+	<div class="flex flex-col w-2/3">
+		<div class="flex flex-col gap-2 h-full p-4">
+			<div class="flex flex-col w-full items-center">
+				<h1 class="text-5xl mb-10 px-2 text-neutral-content">{{selectedChain.name}}</h1>
+			</div>
+
+			<div class="divider divide-neutral-content w-full">Chain builder</div>
+			<app-flow-composer [chain]="selectedChain" class="w-full flex justify-center"></app-flow-composer>
+
+			@if(selectedChain && selectedChain.chainFlows.length) {
+				<div class="flex justify-between p-4 w-full items-center">
+					<button class="btn btn-primary mt-4 text-black hover:text-white hover:scale-105" (click)="saveChain()">
+						Save Changes
+					</button>
+					<div class="flex gap-2">
+						<button
+							class="btn btn-error mt-4 hover:text-white hover:scale-105"
+							onclick="confirm_cancel_chain_modal.showModal()">
+							Cancel
+						</button>
+						<button class="btn btn-accent mt-4 hover:text-white hover:scale-105" (click)="runChain()">
+							<ng-icon name="heroPlayCircle" size="1.25rem"></ng-icon>
+							Test Chain
+						</button>
+					</div>
+				</div>
+				}
+		</div>
+	</div>
+	}
 
 	<ul class="menu bg-base-200 text-base-content h-full w-1/3">
 		<div class="tabs tabs-lift">
 			<input
 				type="radio"
 				name="divider_tabs"
-				class="tab w-1/2"
+				class="tab w-1/3"
 				aria-label="Tests"
 				[checked]="!testManager.allTests().length ? 'checked' : ''" />
 			<div class="tab-content bg-base-100 border-base-300 p-2">
@@ -72,7 +111,7 @@
 			<input
 				type="radio"
 				name="divider_tabs"
-				class="tab w-1/2"
+				class="tab w-1/3"
 				aria-label="Flows"
 				[checked]="testManager.allTests().length ? 'checked' : ''" />
 			<div class="tab-content bg-base-100 border-base-300 p-2">
@@ -83,10 +122,37 @@
 					</button>
 				</li>
 
-				<ul class="list bg-base-100 flex flex-col gap-2">
+				<ul class="list bg-base-100 flex flex-col gap-2"
+					#allFlowsList
+					cdkDropList
+					[cdkDropListData]="chainFlows()"
+					[cdkDropListConnectedTo]="['chainFlowsList']">
 					<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Flows</li>
 					@for(flow of testManager.allFlows(); track $index) {
-					<app-flow-list-item (clicked)="selectFlow($event)" [flow]="flow"></app-flow-list-item>
+						<app-flow-list-item (clicked)="selectFlow($event)" [flow]="flow"></app-flow-list-item>
+
+					}
+				</ul>
+			</div>
+
+			<input
+				type="radio"
+				name="divider_tabs"
+				class="tab w-1/3"
+				aria-label="Chains"
+				[checked]="testManager.allChains().length ? 'checked' : ''" />
+			<div class="tab-content bg-base-100 border-base-300 p-2">
+				<li>
+					<button class="btn btn-primary" onclick="create_chain_modal.showModal()">
+						<span class="text-2xl mb-0.5">+</span>
+						Add Chain
+					</button>
+				</li>
+
+				<ul class="list bg-base-100 flex flex-col gap-2">
+					<li class="p-4 pb-2 text-xs opacity-60 tracking-wide">All Chains</li>
+					@for(chain of testManager.allChains(); track $index) {
+					<app-chain-list-item (clicked)="selectChain($event)" [chain]="chain"></app-chain-list-item>
 
 					}
 				</ul>
@@ -228,6 +294,61 @@
 			<div class="flex justify-end w-full">
 				<button class="btn btn-primary" [disabled]="newFlowForm.invalid" (click)="createNewFlow()">
 					Create Flow
+				</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop">
+			<button>close</button>
+		</form>
+	</dialog>
+
+
+	<dialog id="create_chain_modal" class="modal">
+		<div class="modal-box">
+			<h3 class="text-lg font-bold">Create New Chain</h3>
+
+			<form [formGroup]="newChainForm">
+				<fieldset class="fieldset">
+					<legend class="fieldset-legend">Chain Name</legend>
+					<input
+						[class.input-error]="
+							newChainForm.controls['name'].invalid && newChainForm.controls['name'].touched
+						"
+						type="text"
+						class="input"
+						placeholder="Type here"
+						formControlName="name" />
+					<p
+						class="fieldset-label"
+						[class.text-error]="
+							newChainForm.controls['name'].invalid && newChainForm.controls['name'].touched
+						">
+						required
+					</p>
+				</fieldset>
+
+				<fieldset class="fieldset">
+					<legend class="fieldset-legend">Describe this chain</legend>
+					<textarea
+						[class.textarea-error]="
+							newChainForm.controls['description'].invalid && newChainForm.controls['description'].touched
+						"
+						type="email"
+						class="textarea h-32"
+						placeholder="Type here"
+						formControlName="description"></textarea>
+					<p
+						class="fieldset-label"
+						[class.text-error]="
+							newChainForm.controls['description'].invalid && newChainForm.controls['description'].touched
+						">
+						required
+					</p>
+				</fieldset>
+			</form>
+			<div class="flex justify-end w-full">
+				<button class="btn btn-primary" [disabled]="newChainForm.invalid" (click)="createNewChain()">
+					Create Chain
 				</button>
 			</div>
 		</div>

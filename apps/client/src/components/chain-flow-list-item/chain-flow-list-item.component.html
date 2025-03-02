@@ -2,35 +2,36 @@
 	class="cursor-move bg-base-200 rounded-lg w-full"
 	cdkDrag
 	(cdkDragEnded)="dragEnded($event)"
-	(click)="clicked.emit(flowTest)">
-	@let testHistory = testManager.flowTestRunHistory()[flowTest.flow.id][flowTest.test.id];
+	(click)="clicked.emit(chainFlow)">
+	<!-- @let testHistory = testManager.flowTestRunHistory()[chainFlow.flow.id]; -->
 
 	<div
 		class="flex flex-col items-start justify-center p-2 px-4 rounded-lg w-full"
 		[class.text-white]="showLinkWarning"
 		[ngClass]="{
-			'bg-success-content': testHistory.success,
-			'bg-error-content': testHistory.error,
+			'bg-success-content': chainFlowTestHistory().success,
+			'bg-error-content': chainFlowTestHistory().error,
 			'bg-warning-content': showLinkWarning
 		}">
+		
 		<span class="flex justify-between w-full pt-1.5">
 			<p [class.text-warning]="showLinkWarning" [class.text-xl]="showLinkWarning" class="pb-2">
-				{{ flowTest.test.name }}
+				{{ chainFlow.flow.name }}
 			</p>
 
-			<div class="flex flex-col space-y-2">
+			<!-- <div class="flex flex-col space-y-2">
 				<label class="cursor-pointer label flex justify-between space-x-2">
 					<small class="label-text">Force Go to</small>
 					<input
 						type="checkbox"
 						checked="checked"
 						class="checkbox checkbox-accent checkbox-sm"
-						[(ngModel)]="flowTest.forceGoto" />
+						[(ngModel)]="chainFlow.forceGoto" />
 				</label>
-			</div>
+			</div> -->
 		</span>
 		<small class="text-xs font-thin text-pretty text-inherit pb-1">
-			{{ flowTest.test.description }}
+			{{ chainFlow.flow.description }}
 		</small>
 
 		@if(showLinkWarning) {
@@ -47,29 +48,18 @@
 		<div class="flex flex-col w-full text-xs">
 			<div
 				[class.text-warning]="showLinkWarning"
-				class="hover:bg-base-300 hover:text-white hover:scale-110 cursor-pointer p-1 w-fit rounded-md"
-				(click)="copyText(flowTest.test.startUrl)">
-				<ng-icon name="heroClipboard"></ng-icon>
-				Start:
+				class="hover:bg-base-300 hover:text-white hover:scale-110 cursor-pointer p-1 w-fit rounded-md">
+				Tests:
 				<small>
-					{{ flowTest.test.startUrl }}
-				</small>
-			</div>
-			<div
-				class="hover:bg-base-300 hover:text-white hover:scale-110 cursor-pointer p-1 w-fit rounded-md"
-				(click)="copyText(flowTest.test.endUrl)">
-				<ng-icon name="heroClipboard"></ng-icon>
-				End:
-				<small>
-					{{ flowTest.test.endUrl }}
+					{{ chainFlow.flow.flowTests.length }}
 				</small>
 			</div>
 		</div>
 
-		@if(testHistory.error) {
+		@if(chainFlowTestHistory().error) {
 		<div class="mockup-code w-full">
 			<pre class="max-w-full overflow-x-auto whitespace-pre-wrap h-fit">
-					<code class="pl-8">{{ testHistory.error }}</code>
+					<code class="pl-8">{{ chainFlowTestHistory().error }}</code>
 				</pre>
 		</div>
 		}

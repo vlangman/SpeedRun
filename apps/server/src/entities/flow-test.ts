@@ -19,8 +19,5 @@ export class FlowTest {
 
 	@Column()
 	forceGoto: boolean;
-	@Column()
-	openInNewTab: boolean;
-	@Column()
-	openInNewWindow: boolean;
+
 }

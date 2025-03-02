@@ -1,5 +1,5 @@
 import { computed, effect, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { Flow, FlowRunResult, FlowTestRunResult, Test } from '@shared';
+import { Chain, Flow, FlowRunResult, FlowTestRunResult, Test } from '@shared';
 import { ApiService } from './api.service';
 import { catchError, forkJoin, of, switchMap, tap } from 'rxjs';
 
@@ -43,6 +43,7 @@ export class TestManagerService {
 	private runHistory: WritableSignal<FlowTestRunResult[]> = signal([]);
 	allTests: WritableSignal<Test[]> = signal([]);
 	allFlows: WritableSignal<Flow[]> = signal([]);
+	allChains: WritableSignal<Chain[]> = signal([]);
 
 	constructor(private apiService: ApiService) {
 		(window as any).testManager = this;
@@ -50,18 +51,17 @@ export class TestManagerService {
 	}
 
 	loadData() {
-		this.apiService
-			.getAllTests()
-			.pipe(
-				switchMap((tests) => {
-					return forkJoin([of(tests), this.apiService.getAllFlows()]);
-				})
-			)
-			.subscribe((testAndFlows) => {
-				const [tests, flows] = testAndFlows;
-				this.allFlows.set(flows);
-				this.allTests.set(tests);
-			});
+		forkJoin([
+			this.apiService.getAllTests(),
+			this.apiService.getAllFlows(),
+			this.apiService.getAllChains(),
+		]).subscribe((testAndFlows) => {
+			console.log('TESTS AND FLOWS', testAndFlows);
+			const [tests, flows, chains] = testAndFlows;
+			this.allFlows.set(flows);
+			this.allTests.set(tests);
+			this.allChains.set(chains);
+		});
 	}
 
 	testFlow(flow: Flow) {
@@ -74,6 +74,22 @@ export class TestManagerService {
 				if (response) {
 					this.runHistory.set([...response.flowTestResults]);
 					console.log('CLEARING HISTORY');
+				}
+			})
+		);
+	}
+
+	testChain(chain: Chain) {
+		return this.apiService.testChain(chain).pipe(
+			catchError((error) => {
+				console.error('Failed to run chain', error);
+				return of(null);
+			}),
+			tap((response) => {
+				if (response) {
+					console.log(response);
+					// 					this.runHistory.set([...response.flowTestResults]);
+					// 					console.log('CLEARING HISTORY');
 				}
 			})
 		);

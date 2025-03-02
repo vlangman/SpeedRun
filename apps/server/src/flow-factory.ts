@@ -68,7 +68,7 @@ test('${flow.name}', async ({ page , browser }) => {`;
 			//ensure this only happens in the first line never the first inde
 
 			let finalCode = '';
-			if (flowTestIndex > 0 && !flowTest.forceGoto && !flowTest.openInNewWindow) {
+			if (flowTestIndex > 0 && !flowTest.forceGoto ) {
 				const pageGotoIndex = slicedCode.indexOf('page.goto');
 				const isFirstLineEnd = slicedCode.indexOf('\n');
 

@@ -27,8 +27,7 @@ try {
 	
 	console.log('EXECUTING_FLOW_TEST_ID:2');
 
-	await page.goto('https://www.rfc-editor.org/rfc/rfc2606');
-  const page1Promise = page.waitForEvent('popup');
+	await page.waitForURL('https://www.rfc-editor.org/rfc/rfc2606');  const page1Promise = page.waitForEvent('popup');
   await page.getByRole('link', { name: '6761' }).click();
   const page1 = await page1Promise;
   await page1.getByRole('link', { name: '2606', exact: true }).click();

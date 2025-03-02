@@ -16,7 +16,6 @@
 		id="selectedTestsList"
 		#selectedTestsList="cdkDropList"
 		[cdkDropListData]="flow.flowTests"
-		[cdkDropListConnectedTo]="['availableTestsList']"
 		(cdkDropListDropped)="drop($event)">
 		@for(flowTest of flow.flowTests; track $index) {
 		<div class="flex gap-2 items-center p-2 w-full">

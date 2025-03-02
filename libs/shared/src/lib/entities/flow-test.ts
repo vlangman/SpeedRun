@@ -8,6 +8,4 @@ export interface FlowTest {
 	order: number;
 	
 	forceGoto: boolean;
-	openInNewTab: boolean;
-	openInNewWindow: boolean;
 }

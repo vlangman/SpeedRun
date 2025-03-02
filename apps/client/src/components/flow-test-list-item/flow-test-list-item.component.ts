@@ -43,9 +43,9 @@ export class FlowTestListItemComponent {
 		this.flowTest.forceGoto = !this.flowTest.forceGoto;
 	}
 
-	toggleOpenInNewWindow() {
-		this.flowTest.openInNewWindow = !this.flowTest.openInNewWindow;
-	}
+	// toggleOpenInNewWindow() {
+	// 	this.flowTest.openInNewWindow = !this.flowTest.openInNewWindow;
+	// }
 
 	copyText(text: string) {
 		navigator.clipboard.writeText(text).then(() => {

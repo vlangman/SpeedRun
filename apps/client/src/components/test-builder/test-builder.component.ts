@@ -2,7 +2,7 @@ import { Component, computed, effect, ElementRef, signal, ViewChild, WritableSig
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { catchError, of } from 'rxjs';
-import { Flow, FlowRunResult, Test } from '@shared';
+import { Chain, ChainFlow, Flow, FlowRunResult, Test } from '@shared';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TestComposerComponent } from '../test-composer/test-composer.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -12,7 +12,9 @@ import { FlowListItemComponent } from '../flow-list-item/flow-list-item.componen
 import { TestManagerService } from '../../services/test-manager.service';
 import { TestCodeEditorComponent } from '../test-code-editor/test-code-editor.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroPlay, heroPlayCircle } from '@ng-icons/heroicons/outline';
+import { heroPlayCircle } from '@ng-icons/heroicons/outline';
+import { FlowComposerComponent } from '../flow-composer/flow-composer.component';
+import { ChainListItemComponent } from '../chain-list-item/chain-list-item.component';
 
 @Component({
 	selector: 'app-test-builder',
@@ -25,7 +27,9 @@ import { heroPlay, heroPlayCircle } from '@ng-icons/heroicons/outline';
 		TestListItemComponent,
 		FlowListItemComponent,
 		TestCodeEditorComponent,
+		ChainListItemComponent,
 		NgIcon,
+		FlowComposerComponent,
 	],
 	providers: [
 		provideIcons({
@@ -36,7 +40,8 @@ import { heroPlay, heroPlayCircle } from '@ng-icons/heroicons/outline';
 	styleUrls: ['./test-builder.component.css'],
 })
 export class TestBuilderComponent {
-	//Iffy hack to get the AngularCDK Drag lists to be the same underlying type (under the hood its still a test)
+	//Iffy hack to get the AngularCDK Drag lists to be the same underlying type (under the hood its still a test
+	// flow is rebound on drop() to the flowTests array)
 	testFlows = computed(() => {
 		const tests = this.testManager.allTests();
 
@@ -45,16 +50,28 @@ export class TestBuilderComponent {
 				test,
 				order: 0,
 				forceGoto: false,
-				openInNewTab: false,
-				openInNewWindow: false,
 			};
 			return flowTest;
 		});
 	});
+
+	chainFlows = computed(() => {
+		const flows = this.testManager.allFlows();
+
+		return flows.map((flow) => {
+			const flowTest: Omit<ChainFlow, 'chain' | 'id'> = {
+				flow,
+				order: 0,
+			};
+			return flowTest;
+		});
+	});
+
 	selectedFlow: Flow | null = null;
 	originalFlowTests: FlowTest[] = [];
 	selectedTest: Test | null = null;
-	selectedFlowRunResult: FlowRunResult | null = null;
+
+	selectedChain: Chain | null = null;
 
 	newTestForm: FormGroup = new FormGroup({
 		name: new FormControl('', Validators.required),
@@ -63,6 +80,11 @@ export class TestBuilderComponent {
 	});
 
 	newFlowForm: FormGroup = new FormGroup({
+		name: new FormControl('', Validators.required),
+		description: new FormControl('', Validators.required),
+	});
+
+	newChainForm: FormGroup = new FormGroup({
 		name: new FormControl('', Validators.required),
 		description: new FormControl('', Validators.required),
 	});
@@ -105,27 +127,56 @@ export class TestBuilderComponent {
 		});
 	}
 
+	createNewChain() {
+		const newChain = this.newChainForm.getRawValue();
+		this.apiService.createChain(newChain.name, newChain.description).subscribe((response) => {
+			console.log(response);
+			this.testManager.allChains.update((chains) => {
+				chains.push(response);
+				return chains;
+			});
+		});
+	}
+
 	runFlow() {
 		console.log(this.selectedFlow);
 		this.testManager.testFlow(this.selectedFlow!).subscribe((response) => {
 			console.log(response);
-			if (response) {
-				this.selectedFlowRunResult = response;
-			}
+		});
+	}
+
+	saveChain() {
+		this.apiService.updateChain(this.selectedChain!).subscribe((response) => {
+			console.log(response);
+		});
+	}
+
+	runChain() {
+		console.log(this.selectedChain);
+		this.testManager.testChain(this.selectedChain!).subscribe((response) => {
+			console.log(response);
 		});
 	}
 
 	selectFlow(flow: Flow) {
 		console.log(flow);
 		this.selectedTest = null;
+		this.selectedChain = null;
 		this.selectedFlow = flow;
 		this.originalFlowTests = [...flow.flowTests];
-		this.selectedFlowRunResult = null;
+	}
+
+	selectChain(chain: Chain) {
+		this.selectedChain = chain;
+		this.selectedFlow = null;
+		this.originalFlowTests = [];
+		this.selectedTest = null;
 	}
 
 	selectTest(test: Test) {
 		this.selectedFlow = null;
 		this.originalFlowTests = [];
+		this.selectedChain = null;
 		this.selectedTest = test;
 	}
 

@@ -1,9 +1,11 @@
-<li class="rounded-lg bg-base-200 cursor-move" (click)="clicked.emit(flow)">
+<li cdkDrag (cdkDragEnded)="dragEnded($event)" class="rounded-lg bg-base-200 cursor-move" (click)="clicked.emit(flow)">
 	<div class="flex flex-col items-start justify-center p-2 px-4">
 		<span class="flex justify-between w-full pt-1.5">
 			<p>{{ flow.name }}</p>
 			<div class="flex space-x-2">
-				<button class="btn btn-xs btn-square btn-accent hover:scale-110 hover:text-white" (click)="playFlow(flow)">
+				<button
+					class="btn btn-xs btn-square btn-accent hover:scale-110 hover:text-white"
+					(click)="playFlow(flow)">
 					<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 						<g
 							stroke-linejoin="round"
@@ -15,7 +17,9 @@
 						</g>
 					</svg>
 				</button>
-				<button class="btn btn-xs btn-square btn-danger hover:scale-110 hover:text-white" (click)="showDeleteModal()">
+				<button
+					class="btn btn-xs btn-square btn-danger hover:scale-110 hover:text-white"
+					(click)="showDeleteModal()">
 					<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 						<g
 							stroke-linejoin="round"

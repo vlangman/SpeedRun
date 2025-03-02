@@ -1,0 +1,36 @@
+<li class="rounded-lg bg-base-200 cursor-move" (click)="clicked.next(chain)">
+	<div class="flex flex-col items-start justify-center p-2 px-4">
+		<span class="flex justify-between w-full pt-1.5">
+			<p>{{ chain.name }}</p>
+			<div class="flex space-x-2">
+				<button class="btn btn-xs btn-square btn-accent hover:scale-110 hover:text-white" (click)="playChain(chain)">
+					<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+						<g
+							stroke-linejoin="round"
+							stroke-linecap="round"
+							stroke-width="2"
+							fill="none"
+							stroke="currentColor">
+							<path d="M6 3L20 12 6 21 6 3z"></path>
+						</g>
+					</svg>
+				</button>
+				<button class="btn btn-xs btn-square btn-danger hover:scale-110 hover:text-white" (click)="showDeleteModal()">
+					<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+						<g
+							stroke-linejoin="round"
+							stroke-linecap="round"
+							stroke-width="2"
+							fill="none"
+							stroke="currentColor">
+							<path d="M3 6h18M9 6v12m6-12v12M4 6l1-3h14l1 3M5 6v12a2 2 0 002 2h10a2 2 0 002-2V6"></path>
+						</g>
+					</svg>
+				</button>
+			</div>
+		</span>
+		<small class="text-xs font-semibold text-gray-500">
+			{{ chain.description }}
+		</small>
+	</div>
+</li>

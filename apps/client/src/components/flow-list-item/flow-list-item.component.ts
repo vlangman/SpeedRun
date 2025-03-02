@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Flow, Test } from '@shared';
 import { Subject } from 'rxjs';
 import { ApiService } from '../../services/api.service';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
 	selector: 'app-flow-list-item',
-	imports: [CommonModule],
+	imports: [CommonModule,DragDropModule],
 	templateUrl: './flow-list-item.component.html',
 	styleUrl: './flow-list-item.component.css',
 })
