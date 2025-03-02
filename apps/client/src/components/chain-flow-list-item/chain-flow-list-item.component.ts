@@ -1,9 +1,9 @@
-import { Component, computed, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, EventEmitter, Input, Output, signal, SimpleChanges, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgIcon } from '@ng-icons/core';
 import { FormsModule } from '@angular/forms';
-import { ChainFlow, FlowRunResult } from '@shared';
+import { ChainFlow } from '@shared';
 import { TestManagerService } from '../../services/test-manager.service';
 
 @Component({
@@ -21,7 +21,19 @@ export class ChainFlowListItemComponent {
 	@Output() clicked = new EventEmitter<ChainFlow>();
 
 
+	ngOnChanges(changes: SimpleChanges)
+	{
+		console.log('changes', changes);
+		if(changes['chainFlow'])
+		{
+			this.chainFlow = changes['chainFlow'].currentValue;
+			this.recompute.update((v) => v + 1);
+		}
+	}
+
+	private recompute: WritableSignal<number> = signal(0);
 	chainFlowTestHistory = computed(() => {
+		this.recompute()
 		let succeeded = 0;
 		let error = null;
 		let success = false;
@@ -29,7 +41,7 @@ export class ChainFlowListItemComponent {
 
 		let index = 1;
 		for (const flowTest of this.chainFlow.flow.flowTests) {
-			const flowRunHistory = this.testManager.flowTestRunHistory()[this.chainFlow.flow.id];
+			const flowRunHistory = this.testManager.flowTestRunHistory()[flowTest.flow.id];
 			const testHistory = flowRunHistory[flowTest.test.id];
 
 			if (testHistory && testHistory.success) {
@@ -61,5 +73,6 @@ export class ChainFlowListItemComponent {
 		console.log('drag ended', event);
 		const draggedElement = event.source.element.nativeElement;
 		draggedElement.style.transform = 'none';
+		this.recompute.update((v) => v + 1);
 	}
 }
