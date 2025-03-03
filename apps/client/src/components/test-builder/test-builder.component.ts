@@ -71,8 +71,10 @@ export class TestBuilderComponent {
 	selectedFlow: Flow | null = null;
 	originalFlowTests: FlowTest[] = [];
 	selectedTest: Test | null = null;
-
 	selectedChain: Chain | null = null;
+
+
+	// environmentURL: string = 'https://localhost:8080';
 
 	newTestForm: FormGroup = new FormGroup({
 		name: new FormControl('', Validators.required),

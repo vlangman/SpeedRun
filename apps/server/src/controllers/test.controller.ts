@@ -21,8 +21,8 @@ export class TestController {
 		// check if on unix / linux or windows
 		const isWindows = process.platform === 'win32';
 		const launchCommand = isWindows
-			? `cmd /c "set DEBUG=pw:api && npx playwright codegen ${url} --output ${filePath} --ignore-https-errors"`
-			: `DEBUG=pw:api npx playwright codegen ${url} --output ${filePath}`;
+			? `cmd /c "set DEBUG=pw:api && npx playwright codegen ${url} --output ${filePath} --ignore-https-errors --viewport-size=1920,1080"`
+			: `DEBUG=pw:api npx playwright codegen ${url} --output ${filePath}  --ignore-https-errors  --viewport-size=1920,1080 `;
 
 		//start the codegen for the test using the url
 		exec(launchCommand, async (error, stdout, stderr) => {
@@ -83,7 +83,7 @@ export class TestController {
 
 			const fileName = testName.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
 			exec(
-				`npx playwright codegen ${sanitizedUrl} --output ${fileName} --ignore-https-errors`,
+				`npx playwright codegen ${sanitizedUrl} --output ${fileName} --ignore-https-errors --viewport-size=1920,1080`,
 				async (error, stdout, stderr) => {
 					if (error) {
 						if (queryRunner.isTransactionActive) {
@@ -319,10 +319,16 @@ export class TestController {
 				res.json(response);
 				return;
 			}
-			console.log(test.name);
+			const testFile = test.name.trim().replace(/[^a-zA-Z0-9-_.]/g, '');
 			//open the test using npx playwright test
-			const realPath = path.join(__dirname, '../../../recordings', `${test.name}.spec.ts`).replace(/\\/g, '/');
+			const realPath = path.join(__dirname, '../../../recordings', `${testFile}.spec.ts`).replace(/\\/g, '/');
 			console.log(realPath);
+
+			//print the file contents to the console
+			// const code = fs.readFileSync(realPath, { encoding: 'utf8' });
+			// console.log(code);
+
+			// res.json({ result: null, errors: [] });
 
 			exec(`npx playwright test ${realPath} --headed`, async (error, stdout, stderr) => {
 				if (error) {
@@ -341,6 +347,7 @@ export class TestController {
 				res.json(response);
 			});
 		} catch (error) {
+			console.error(error);
 			const response: APIResponse<null> = {
 				result: null,
 				errors: [

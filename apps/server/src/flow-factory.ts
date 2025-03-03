@@ -27,9 +27,13 @@ try {
 
 		const testsPath = path.join(__dirname, '../../../recordings');
 
-		let compiledCode = `const { test, expect } = require('@playwright/test');
+		let compiledCode = `const { test, expect,defineConfig } = require('@playwright/test');
 test.use({
 	ignoreHTTPSErrors: true
+});
+
+export default defineConfig({
+  timeout: 120000,  // Set global timeout to 60 seconds for all tests
 });
 
 test('${flow.name}', async ({ page , browser }) => {`;
