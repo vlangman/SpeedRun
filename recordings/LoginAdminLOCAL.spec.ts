@@ -12,4 +12,5 @@ test('test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).fill('GIT123$');
   await page.getByRole('button', { name: 'LOGIN' }).click();
   await page.getByRole('link', { name: 'Toggle Menu' }).click();
+  await page.pause();
 });

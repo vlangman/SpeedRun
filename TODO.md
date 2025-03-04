@@ -6,10 +6,11 @@
 - [DONE] add test result feedback to UI 
 - [DONE] fix TestFlow.id being used instead of flowId & testID combo (when testing new tests in existing flows it fails to tell you what failed and passed if its new)
 - [DONE] add WARNING 
+- [DONE] add text editor for spec.ts files 
+- [DONE] add FORCE GOTO 
+- [DONE] add FORCE OPEN IN NEW WINDOW
 
-<!-- - add FORCE OPEN IN NEW TAB  maybe not necessary ?-->
-- add FORCE GOTO 
-- add FORCE OPEN IN NEW WINDOW
+
+- add assert that test end url matches test url , could error on last step like submit
 - add test Exporter and Importer 
 - add folders to store flows and tests
-- add text editor for spec.ts files 
