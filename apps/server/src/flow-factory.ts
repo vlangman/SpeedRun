@@ -9,34 +9,55 @@ export class FlowFactory {
 	static compileFlow(flow: Flow): string {
 		function wrapTestCodeInTryCatch(flowtest: FlowTest, testCode: string): string {
 			return `
-try {
-	
-	console.log('EXECUTING_FLOW_TEST_ID:${flowtest.flow.id}:${flowtest.test.id}');
 
-	${testCode}
+test('${flowtest.test.name}', async () => {
 
-	console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:${flowtest.flow.id}:${flowtest.test.id}');
+	try {
+		
+		console.log('EXECUTING_FLOW_TEST_ID:${flowtest.flow.id}:${flowtest.test.id}');
 
-} catch (error) {
-	console.log('FAILED_FLOW_TEST_EXECUTION:${flowtest.flow.id}:${flowtest.test.id}');
-	console.error(error.error?.message || error.message);
-	throw error;
-}
+		${testCode}
+
+		console.log('SUCCESSFUL_FLOW_TEST_EXECUTION:${flowtest.flow.id}:${flowtest.test.id}');
+
+	} catch (error) {
+		console.log('FAILED_FLOW_TEST_EXECUTION:${flowtest.flow.id}:${flowtest.test.id}');
+		console.error(error.error?.message || error.message);
+		throw error;
+	}
+		
+});
 `;
 		}
 
 		const testsPath = path.join(__dirname, '../../../recordings');
 
-		let compiledCode = `const { test, expect,defineConfig } = require('@playwright/test');
+		let compiledCode = `const { test, expect, defineConfig, browserContext } = require('@playwright/test');
 test.use({
-	ignoreHTTPSErrors: true
+	ignoreHTTPSErrors: true,
+	timeout: 60000, 
+
 });
 
-export default defineConfig({
-  timeout: 120000,  // Set global timeout to 60 seconds for all tests
+
+// Global variables for the browser and page
+let browser;
+let page;
+
+test.beforeAll(async ({ browser: browserContext }) => {
+  // Initialize browser and context once before all tests
+  browser = browserContext;
+  const context = await browser.newContext();
+  page = await context.newPage();
 });
 
-test('${flow.name}', async ({ page , browser }) => {`;
+test.afterAll(async () => {
+  // Cleanup after all tests
+  await page.close();
+  await browser.close();
+});
+
+test.describe('${flow.name}', async () => {`;
 
 		const tests = flow.flowTests.map((f) => f.test);
 		const testCodeMap = new Map<number, string>();
@@ -79,7 +100,7 @@ test('${flow.name}', async ({ page , browser }) => {`;
 			if (flowTest.openInNewContext) {
 				const pageUUID = uuidv4().replace(/-/g, '').slice(0, 10);
 				finalCode =
-				`
+					`
 					const context = await browser.newContext();
 					const page_${pageUUID} = await context.newPage();
 				` + finalCode.replace(/page\./g, `page_${pageUUID}.`);
@@ -120,7 +141,8 @@ test('${flow.name}', async ({ page , browser }) => {`;
 			const testId = parseInt(match[2]);
 			const flowTest = flow.flowTests.find((t) => t.flow.id === flowId && t.test.id === testId);
 
-			if (!flowTest) throw new Error(`Flow test with flowID: ${flowId} testID ${testId} not found in flow ${flow.name}`);
+			if (!flowTest)
+				throw new Error(`Flow test with flowID: ${flowId} testID ${testId} not found in flow ${flow.name}`);
 			// console.log(match[1]);
 			// console.log(match[2]);
 			// console.log(stdout)
@@ -133,7 +155,9 @@ test('${flow.name}', async ({ page , browser }) => {`;
 				(t) => t.flowId === flowTest.flow.id && t.testId === flowTest.test.id
 			);
 			if (!flowTestResult)
-				throw new Error(`Flow test result with flowID: ${flowTest.flow.id} testID ${flowTest.test.id} not found`);
+				throw new Error(
+					`Flow test result with flowID: ${flowTest.flow.id} testID ${flowTest.test.id} not found`
+				);
 
 			flowTestResult.success = testRan && !testFailed;
 			flowTestResult.error = testFailed ? stderr : null;
