@@ -10,7 +10,10 @@
 - [DONE] add FORCE GOTO 
 - [DONE] add FORCE OPEN IN NEW WINDOW
 
+- add test configuration and flowTest configuration (override test with flowTest config if used )
 
+- add environments
 - add assert that test end url matches test url , could error on last step like submit
 - add test Exporter and Importer 
 - add folders to store flows and tests
+- package Into standalone app to run with EXE 

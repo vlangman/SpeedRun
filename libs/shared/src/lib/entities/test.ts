@@ -11,5 +11,7 @@ export interface Test {
   startUrl: string;
 	endUrl: string;
 
+  config: {[key:string]: any};
+
   code: string;
 }

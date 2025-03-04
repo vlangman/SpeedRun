@@ -22,4 +22,7 @@ export class FlowTest {
 	@Column({default: false})
 	openInNewContext: boolean;
 
+	@Column({type: 'simple-json', default: '{}'})
+	config: {[key:string]: any};
+
 }

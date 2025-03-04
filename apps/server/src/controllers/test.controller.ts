@@ -281,6 +281,7 @@ export class TestController {
 				startUrl: url,
 				flowTests: [],
 				updatedAt: new Date(),
+				config: {},
 			};
 
 			TestController.startCodeGenPlaywrightForTest(queryRunner, test as Test, testRepository, res);
@@ -323,12 +324,6 @@ export class TestController {
 			//open the test using npx playwright test
 			const realPath = path.join(__dirname, '../../../recordings', `${testFile}.spec.ts`).replace(/\\/g, '/');
 			console.log(realPath);
-
-			//print the file contents to the console
-			// const code = fs.readFileSync(realPath, { encoding: 'utf8' });
-			// console.log(code);
-
-			// res.json({ result: null, errors: [] });
 
 			exec(`npx playwright test ${realPath} --headed`, async (error, stdout, stderr) => {
 				if (error) {
@@ -418,16 +413,6 @@ export class TestController {
 	}
 
 	static async extractLastNavigationUrl(stderr: string) {
-		// const urlMatches = stdout.match(/https?:\/\/[^\s'"]+/g); // Match all URLs in stdout
-		// const lastVisitedUrl = urlMatches ? urlMatches[urlMatches.length - 1] : null;
-
-		// if (lastVisitedUrl) {
-		// 	console.log('Captured End URL:', lastVisitedUrl);
-		// 	return lastVisitedUrl;
-
-		// }
-		// console.log('Codegen completed');
-		// console.error('stderr:', stderr);
 
 		// Find the last occurrence of "navigated to"
 		const lastIndex = stderr.lastIndexOf('navigated to');

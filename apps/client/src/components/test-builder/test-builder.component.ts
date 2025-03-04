@@ -51,6 +51,7 @@ export class TestBuilderComponent {
 				order: 0,
 				forceGoto: false,
 				openInNewContext: false,
+				config: test.config,
 			};
 			return flowTest;
 		});

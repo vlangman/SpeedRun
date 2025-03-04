@@ -9,4 +9,5 @@ export interface FlowTest {
 	
 	forceGoto: boolean;
 	openInNewContext: boolean;
+	config: {[key:string]: any};
 }

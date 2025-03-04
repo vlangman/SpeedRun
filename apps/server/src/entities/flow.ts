@@ -22,4 +22,4 @@ export class Flow implements FlowInterface {
 
   @UpdateDateColumn()
   updatedAt: Date;
-}
+}   

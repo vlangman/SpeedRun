@@ -28,6 +28,10 @@ export class Test implements TestInterface {
 	@Column()
 	endUrl: string;
 
-	
+	    
+    @Column({type: 'simple-json', default: '{}'})
+    config: {[key:string]: any};
+
+
 	code: string;
 }
